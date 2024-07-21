@@ -10,24 +10,28 @@
   <div class="row">
     <div class="card">
       <div class="card-body">
-        <form method="post" action="{{ route('import_excel') }}" enctype="multipart/form-data" id="send_student">
-          @csrf
-          <h5 class="card-title">請點選從校務系統 cloudschool 下載來的檔案</h5>
-          <div class="row mb-3">
-            <label for="inputNumber" class="col-sm-2 col-form-label">檔案上傳</label>
-            <div class="col-sm-10">
-              <input class="form-control" type="file" id="file" name="file" accept=".xlsx" required>                                            
+        @if(!$ready==1)
+          <form method="post" action="{{ route('import_excel') }}" enctype="multipart/form-data" id="send_student">
+            @csrf
+            <h5 class="card-title">請點選從校務系統 cloudschool 下載來的檔案</h5>
+            <div class="row mb-3">
+              <label for="inputNumber" class="col-sm-2 col-form-label">檔案上傳</label>
+              <div class="col-sm-10">
+                <input class="form-control" type="file" id="file" name="file" accept=".xlsx" required>                                            
+              </div>
+              <small style="margin-top: 20px;">檔案格式：<span class="text-danger">學年度_學校代碼_日期.xlsx</span>，如 (113_074627_20240626.xlsx)</small>
             </div>
-            <small style="margin-top: 20px;">檔案格式：<span class="text-danger">學年度_學校代碼_日期.xlsx</span>，如 (113_074627_20240626.xlsx)</small>
-          </div>
-          <div class="row mb-3">
-            <label class="col-sm-2 col-form-label"></label>
-            <div class="col-sm-10">
-              @include('layouts.errors')
-              <a class="btn btn-primary" onclick="sw_confirm2('重複上傳將先刪除先前資料喔！','send_student')">送出</a>
+            <div class="row mb-3">
+              <label class="col-sm-2 col-form-label"></label>
+              <div class="col-sm-10">
+                @include('layouts.errors')
+                <a class="btn btn-primary" onclick="sw_confirm2('重複上傳將先刪除先前資料喔！','send_student')"><i class="bi bi-arrow-right-circle-fill"></i> 送出</a>
+              </div>
             </div>
-          </div>
-        </form>
+          </form>
+        @else
+          <h5 class="card-title text-danger">**已送交編班中心無法再上傳**真有需求時請編班中心打開上鎖**</h5>
+        @endif
       </div>
     </div>
   </div>
@@ -35,7 +39,9 @@
   <div class="row">
     <div class="card">
       <div class="card-body">
-        <h5 class="card-title">{{ $semester_year }}學年已匯入的老師及學生名單</h5>        
+        <h5 class="card-title">{{ $semester_year }}學年已匯入的老師及學生名單</h5>    
+        <span class="text-danger">以下資料供參，請至「學校動作-<a href="{{ route('student_type') }}">設定學生編班屬性</a>」繼續更多的設定！</span>    
+        <hr>        
         校名：{{ auth()->user()->school->name }} 班級數：{{ count($teachers) }} 學生數：{{ count($student_data[$semester_year]) }}<br>
         老師：
         @foreach($teachers as $teacher)

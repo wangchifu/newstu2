@@ -25,6 +25,7 @@
 @section('page_title')
 <br>
 <h1>歡迎使用</h1>
+<i class="bi bi-star-fill text-warning"></i> 為編班中心學校
 @endsection
 
 @section('content')
@@ -35,8 +36,7 @@
       <div class="col-xxl-4 col-md-6">
         <div class="card info-card sales-card">
           <div class="card-body">
-            <h5 class="card-title">{{ $group->name }} <span>| 學校名單</span></h5>
-
+            <h5 class="card-title">{{ $group->name }} <span>| 學校名單</span></h5>            
             <div class="d-flex align-items-center">
               <table class="table table-striped">
                 <thead>
@@ -54,7 +54,12 @@
                     <tr>
                       <th scope="row">{{ $n }}</th>
                       <td>{{ $school->code }}</td>
-                      <td>{{ $school->name }}</td>
+                      <td>
+                        @if($school->group_admin)
+                          <i class="bi bi-star-fill text-warning"></i>
+                        @endif
+                        {{ $school->name }}
+                      </td>
                       <td><i class="bi bi-check-circle"></i></td>
                       <td>2016-05-25</td>
                     </tr>

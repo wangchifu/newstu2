@@ -19,26 +19,64 @@
               一般生：{{ $type[0] }}
             </td>
             <td>
-              特殊生：{{ $type[1] }} (共減 {{ $subtract }} 人)
+              特殊生：{{ $type[1] }} (共減 {{ $subtract }} 人)：
+              @foreach($spacial_student as $k=>$v)
+                <?php $wt=(!empty($student_data[$semester_year][$k]['with_teacher']))?$student_data[$semester_year][$k]['with_teacher']:"<span class='text-danger'>未設定</span>" ?>
+                <span class="badge bg-secondary" style="font-size: 15px;">{{ $student_data[$semester_year][$k]['no']." ".$v }}</span>(-{{ $student_data[$semester_year][$k]['subtract'] }} +{!! $wt !!}),
+              @endforeach
             </td>
           </tr>  
           <tr>
             <td>
-              雙胞胎同班：{{ $type[2] }}
+              雙胞胎同班：{{ $type[2] }}：
+              @foreach($bao2_same as $k=>$v)
+              <span class="badge bg-secondary" style="font-size: 15px;">{{ $student_data[$semester_year][$k]['no']." ".$v }}</span>({{ $student_data[$semester_year][$k]['another_no'] }}), 
+              @endforeach
             </td>
             <td>
-              雙胞胎不同班：{{ $type[3] }}
+              雙胞胎不同班：{{ $type[3] }}：
+              @foreach($bao2_not_same as $k=>$v)
+              <span class="badge bg-secondary" style="font-size: 15px;">{{ $student_data[$semester_year][$k]['no']." ".$v }}</span>({{ $student_data[$semester_year][$k]['another_no'] }}), 
+              @endforeach
             </td>
           </tr>
           <tr>
             <td>
-              三胞胎全同班：{{ $type[4] }}
+              三胞胎全同班：{{ $type[4] }}：
+              @foreach($bao3_same as $k=>$v)
+              <span class="badge bg-secondary" style="font-size: 15px;">{{ $student_data[$semester_year][$k]['no']." ".$v }}</span>, 
+              @endforeach
             </td>
             <td>
-              三胞胎全不同班：{{ $type[5] }}
+              三胞胎全不同班：{{ $type[5] }}：
+              @foreach($bao3_not_same as $k=>$v)
+              <span class="badge bg-secondary" style="font-size: 15px;">{{ $student_data[$semester_year][$k]['no']." ".$v }}</span>, 
+              @endforeach
             </td>
           </tr>
-        </table>             
+          <tr>
+            <td>
+              父母之一是此年級老師：
+              @foreach($with_out_teacher as $k=>$v)
+              <span class="badge bg-secondary" style="font-size: 15px;">{{ $student_data[$semester_year][$k]['no']." ".$v['student'] }}</span>(-{{ $v['teacher'] }}), 
+              @endforeach
+            </td>
+            <td>
+              
+            </td>
+          </tr>
+        </table>        
+        <hr>
+        @if(!$ready==1)
+          <form action="{{ route('school_ready') }}" method="post" id="go_send">
+            @csrf
+            <input type="hidden" name="semester_year" value="{{ $semester_year }}">
+            @include('layouts.errors')
+            <a href="#" class="btn btn-primary" onclick="sw_confirm2('上傳編班中心不能再更改了喔！','go_send')"><i class="bi bi-arrow-right-circle-fill"></i> 確定送出不再修改</a>
+          </form>
+        @else
+          <span class="text-danger">**已送交編班中心無法再更動**真有需求時請編班中心打開上鎖**</span>
+        @endif
         <table class="table table-hover">
           <thead>
             <tr>
@@ -51,7 +89,9 @@
               <th scope="col">身分證字號</th>
               <th scope="col">編班類別</th>
               <th scope="col">相關流水號</th>
-              <th scope="col">動作</th>
+              @if(!$ready==1)
+                <th scope="col">動作</th>
+              @endif
             </tr>
           </thead>
           <tbody>
@@ -121,9 +161,11 @@
                   <td>
                     {{ $v1['another_no'] }}
                   </td>
-                  <td>
-                    <a href="{{ route('edit_student',$k1) }}" class="btn btn-outline-primary">修改</a>
-                  </td>
+                  @if(!$ready==1)
+                    <td>
+                      <a href="{{ route('edit_student',$k1) }}" class="btn btn-outline-primary">修改</a>
+                    </td>
+                  @endif
                 </tr>
                 <?php $n++; ?>  
               @endforeach

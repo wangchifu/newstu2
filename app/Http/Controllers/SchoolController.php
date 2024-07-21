@@ -8,6 +8,7 @@ use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use App\Models\Student;
 use App\Models\Teacher;
+use App\Models\School;
 
 class SchoolController extends Controller
 {
@@ -37,11 +38,12 @@ class SchoolController extends Controller
             $student_data[$student->semester_year][$student->id]['another_no'] = $student->another_no;
             $student_data[$student->semester_year][$student->id]['ps'] = $student->ps;
         }
-       
+        $school = School::where('code',auth()->user()->school->code)->first(); 
         $data = [
             'semester_year'=>$semester_year,
             'student_data'=>$student_data,
             'teachers'=>$teachers,
+            'ready'=>$school->ready,
         ];
         return view('schools.upload_students',$data);
     }
@@ -51,6 +53,10 @@ class SchoolController extends Controller
         if ($request->hasFile('file')) {
             $file = $request->file('file');
             $file_name_array = explode('_',$file->getClientOriginalName());
+
+            if(chk_file_format($file->getClientOriginalName())=="NO"){
+                return back()->withErrors(['errors' => ['錯誤：檔案名稱不符合要求！']]);
+            }
             $spreadsheet = IOFactory::load($file);
 
             // 選取活動工作表
@@ -135,7 +141,8 @@ class SchoolController extends Controller
             return back()->withErrors(['errors' => ['錯誤：班級數('.$class_num.')與老師數('.count($teacher_array).')不合！？']]);
         }
         //先清空
-        Student::where('semester_year',$file_name_array[0])->where('code',auth()->user()->school->code)->delete();
+        //Student::where('semester_year',$file_name_array[0])->where('code',auth()->user()->school->code)->delete();
+        Student::where('code',auth()->user()->school->code)->delete();
         Student::insert($all);
 
         $one_teacher = [];
@@ -177,6 +184,12 @@ class SchoolController extends Controller
         $type[4] = 0;
         $type[5] = 0;
         $subtract = 0;
+        $spacial_student = [];
+        $bao2_same = [];
+        $bao2_not_same = [];
+        $bao3_same = [];
+        $bao3_not_same = [];
+        $with_out_teacher = [];
         foreach($students as $student){
             $student_data[$student->semester_year][$student->id]['no'] = $student->no;
             $student_data[$student->semester_year][$student->id]['class'] = $student->class;
@@ -186,9 +199,24 @@ class SchoolController extends Controller
             $student_data[$student->semester_year][$student->id]['id_number'] = $student->id_number;
             $student_data[$student->semester_year][$student->id]['old_school'] = $student->old_school;
             $student_data[$student->semester_year][$student->id]['type'] = $student->type;
+            if($student->type==2){
+                $bao2_same[$student->id] = $student->name;
+            }
+            if($student->type==3){
+                $bao2_not_same[$student->id] = $student->name;
+            }
+            if($student->type==4){
+                $bao3_same[$student->id] = $student->name;
+            }
+            if($student->type==5){
+                $bao3_not_same[$student->id] = $student->name;
+            }
             $student_data[$student->semester_year][$student->id]['another_no'] = $student->another_no;
             $student_data[$student->semester_year][$student->id]['ps'] = $student->ps;
             $student_data[$student->semester_year][$student->id]['special'] = $student->special;
+            if($student->special==1){
+                $spacial_student[$student->id] = $student->name;                
+            }            
             $student_data[$student->semester_year][$student->id]['subtract'] = $student->subtract;
             if(!empty($student->with_teacher)){
                 $student_data[$student->semester_year][$student->id]['with_teacher'] = $student->w_teacher->name;
@@ -197,6 +225,8 @@ class SchoolController extends Controller
             }
             if(!empty($student->without_teacher)){
                 $student_data[$student->semester_year][$student->id]['without_teacher'] = $student->wo_teacher->name;
+                $with_out_teacher[$student->id]['student'] = $student->name; 
+                $with_out_teacher[$student->id]['teacher'] = $student->wo_teacher->name; 
             }else{
                 $student_data[$student->semester_year][$student->id]['without_teacher'] = "";
             }
@@ -221,17 +251,31 @@ class SchoolController extends Controller
             $subtract +=$student->subtract;
         }
 
+        $school = School::where('code',auth()->user()->school->code)->first();        
         $data = [
             'semester_year'=>$semester_year,
             'student_data'=>$student_data,
             'teachers'=>$teachers,
             'type'=>$type,
             'subtract'=>$subtract,
+            'spacial_student'=>$spacial_student,
+            'bao2_same'=>$bao2_same,
+            'bao2_not_same'=>$bao2_not_same,
+            'bao3_same'=>$bao3_same,
+            'bao3_not_same'=>$bao3_not_same,
+            'with_out_teacher'=>$with_out_teacher,
+            'ready'=>$school->ready,
         ];
         return view('schools.student_type',$data);
     }
 
     public function edit_student(Student $student){
+
+        //已經 ready 不能再修改
+        $school = School::where('code',auth()->user()->school->code)->first();  
+        if($school->ready==1){
+            return back();
+        }
 
         $teachers = Teacher::where('code',$student->code)
         ->where('semester_year',$student->semester_year)
@@ -301,4 +345,21 @@ class SchoolController extends Controller
         $student->update($att);
         return redirect()->route('student_type');
     }
+
+    function school_ready(Request $request){
+        $semester_year = $request->input('semester_year');
+        $special_students = $students = Student::where('code',auth()->user()->school->code)
+        ->where('semester_year',$semester_year)
+        ->where('special',1)
+        ->get();
+        foreach($special_students as $student){
+            if(empty($student->with_teacher)){
+                return back()->withErrors(['errors' => ['錯誤：無法送出！有特殊生沒有指定導師！']]);
+            }
+        }
+        $att['ready'] = 1;
+        School::where('code',auth()->user()->school->code)->update($att);
+        return back();
+    }
+
 }

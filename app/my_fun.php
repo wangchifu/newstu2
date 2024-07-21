@@ -65,3 +65,14 @@ function chk_id_number($cardid) {
     // \App\Library\CommonTools::writeErrorLogByMessage($msg);
     return true;
 }
+
+//檢查檔名
+function chk_file_format($file) {
+	$chk='NO';
+	//if(ereg("^[0-9]{3}_[0-9]{6}_[0-9]{8}\.csv",$file))   $chk='OK';
+	//if(ereg("^[0-9]{3}_[0-9]{6}_[0-9]{8}\.csv",$file))   $chk='OK';
+	//if (preg_match("/^[0-9]{3}_[0-9]{6}_[0-9]{8}.csv/",$file))  $chk='OK';
+	$regex="/^[0-9]{3}_[0-9]{6}_[0-9]{8}.xlsx/";
+	if (preg_match($regex,$file))  $chk='OK';
+	Return $chk;
+}

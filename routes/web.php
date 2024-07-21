@@ -3,6 +3,8 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\SchoolController;
+use App\Http\Controllers\GroupAdminController;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -45,4 +47,15 @@ Route::post('import_excel', [SchoolController::class, 'import_excel'])->name('im
 Route::get('student_type/{semester_year?}', [SchoolController::class, 'student_type'])->name('student_type');
 Route::get('edit_student/{student}', [SchoolController::class, 'edit_student'])->name('edit_student');
 Route::post('update_student/{student}', [SchoolController::class, 'update_student'])->name('update_student');
+Route::post('school_ready', [SchoolController::class, 'school_ready'])->name('school_ready');
+});
+
+Route::group(['middleware' => 'group_admin'], function () {
+    Route::get('assign_group_admin', [GroupAdminController::class, 'assign_group_admin'])->name('assign_group_admin');
+    Route::post('do_assign', [GroupAdminController::class, 'do_assign'])->name('do_assign');
+    Route::get('start', [GroupAdminController::class, 'start'])->name('start');
+    Route::get('group_admin_unlock/{school}', [GroupAdminController::class, 'group_admin_unlock'])->name('group_admin_unlock');
+    Route::get('show_student/{school}', [GroupAdminController::class, 'show_student'])->name('show_student');
+    Route::get('form_class/{school}', [GroupAdminController::class, 'form_class'])->name('form_class');
+    Route::post('go_form/{school}', [GroupAdminController::class, 'go_form'])->name('go_form');
 });
