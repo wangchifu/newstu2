@@ -44,6 +44,7 @@ class SchoolController extends Controller
             'student_data'=>$student_data,
             'teachers'=>$teachers,
             'ready'=>$school->ready,
+            'class_num'=>$school->class_num,
         ];
         return view('schools.upload_students',$data);
     }
@@ -144,6 +145,11 @@ class SchoolController extends Controller
         //Student::where('semester_year',$file_name_array[0])->where('code',auth()->user()->school->code)->delete();
         Student::where('code',auth()->user()->school->code)->delete();
         Student::insert($all);
+
+        //填上班級數(有些學校不會送老師)
+        $att_class['class_num'] =$class_num;
+        $school = School::where('code',auth()->user()->school->code)->first();
+        $school->update($att_class);
 
         $one_teacher = [];
         $all_teacher = [];
@@ -339,6 +345,7 @@ class SchoolController extends Controller
         }
         //一般生而且不是多胞就改 type 為 
         if($att['special']==null and !isset($att['type'])){
+            $att['another_no'] = null; 
             $att['type']=0;
         }
         

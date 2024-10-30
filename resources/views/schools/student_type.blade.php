@@ -13,7 +13,7 @@
       <div class="card-body">
         <h5 class="card-title">{{ $semester_year }}學年已匯入的學生名單</h5>   
         <h4>{{ auth()->user()->school->name }}</h4>
-        <table>
+        <table class="table table-bordered">
           <tr>
             <td>
               一般生：{{ $type[0] }}
@@ -22,7 +22,11 @@
               特殊生：{{ $type[1] }} (共減 {{ $subtract }} 人)：
               @foreach($spacial_student as $k=>$v)
                 <?php $wt=(!empty($student_data[$semester_year][$k]['with_teacher']))?$student_data[$semester_year][$k]['with_teacher']:"<span class='text-danger'>未設定</span>" ?>
-                <span class="badge bg-secondary" style="font-size: 15px;">{{ $student_data[$semester_year][$k]['no']." ".$v }}</span>(-{{ $student_data[$semester_year][$k]['subtract'] }} +{!! $wt !!}),
+                <span class="badge bg-success position-relative" style="font-size: 15px;">{{ $student_data[$semester_year][$k]['no']." ".$v }}
+                  <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                    -{{ $student_data[$semester_year][$k]['subtract'] }}
+                  </span>                
+                </span><span class="badge bg-info">+{!! $wt !!}</span>
               @endforeach
             </td>
           </tr>  
@@ -30,13 +34,13 @@
             <td>
               雙胞胎同班：{{ $type[2] }}：
               @foreach($bao2_same as $k=>$v)
-              <span class="badge bg-secondary" style="font-size: 15px;">{{ $student_data[$semester_year][$k]['no']." ".$v }}</span>({{ $student_data[$semester_year][$k]['another_no'] }}), 
+              <span class="badge bg-warning" style="font-size: 15px;"><i class="bi bi-check-circle-fill"></i> {{ $student_data[$semester_year][$k]['no']." ".$v }}</span><span class="badge bg-info">+{{ $student_data[$semester_year][$k]['another_no'] }}</span> 
               @endforeach
             </td>
             <td>
               雙胞胎不同班：{{ $type[3] }}：
               @foreach($bao2_not_same as $k=>$v)
-              <span class="badge bg-secondary" style="font-size: 15px;">{{ $student_data[$semester_year][$k]['no']." ".$v }}</span>({{ $student_data[$semester_year][$k]['another_no'] }}), 
+              <span class="badge bg-secondary" style="font-size: 15px;"><i class="bi bi-x-circle-fill"></i> {{ $student_data[$semester_year][$k]['no']." ".$v }}</span><span class="badge bg-info">+{{ $student_data[$semester_year][$k]['another_no'] }}</span>
               @endforeach
             </td>
           </tr>
@@ -44,13 +48,13 @@
             <td>
               三胞胎全同班：{{ $type[4] }}：
               @foreach($bao3_same as $k=>$v)
-              <span class="badge bg-secondary" style="font-size: 15px;">{{ $student_data[$semester_year][$k]['no']." ".$v }}</span>, 
+              <span class="badge bg-info" style="font-size: 15px;"><i class="bi bi-check-circle-fill"></i> {{ $student_data[$semester_year][$k]['no']." ".$v }}</span>
               @endforeach
             </td>
             <td>
               三胞胎全不同班：{{ $type[5] }}：
               @foreach($bao3_not_same as $k=>$v)
-              <span class="badge bg-secondary" style="font-size: 15px;">{{ $student_data[$semester_year][$k]['no']." ".$v }}</span>, 
+              <span class="badge bg-dark" style="font-size: 15px;"><i class="bi bi-x-circle-fill"></i> {{ $student_data[$semester_year][$k]['no']." ".$v }}</span>
               @endforeach
             </td>
           </tr>
@@ -58,7 +62,12 @@
             <td>
               父母之一是此年級老師：
               @foreach($with_out_teacher as $k=>$v)
-              <span class="badge bg-secondary" style="font-size: 15px;">{{ $student_data[$semester_year][$k]['no']." ".$v['student'] }}</span>(-{{ $v['teacher'] }}), 
+              <span class="badge bg-primary position-relative" style="font-size: 15px;">
+                {{ $student_data[$semester_year][$k]['no']." ".$v['student'] }}
+                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                  -{{ $v['teacher'] }}
+                </span>
+              </span>
               @endforeach
             </td>
             <td>
@@ -147,8 +156,13 @@
                       </h5>
                     @endif
                     @if($v1['special']==1)
-                      <h5><span class="badge rounded-pill bg-success">特殊生</span>
-                        <span class="badge bg-warning">-{{ $v1['subtract'] }}</span>
+                      <h5>
+                      <span class="badge rounded-pill bg-success position-relative">
+                        特殊生
+                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                          -{{ $v1['subtract'] }}
+                        </span>
+                      </span>                        
                         @if(!empty($v1['with_teacher']))
                           <span class="badge bg-info">+{{ $v1['with_teacher'] }}</span>
                         @endif

@@ -17,9 +17,11 @@ return new class extends Migration
             $table->id();
             $table->string('name')->unique;
             $table->string('code')->unique;
-            $table->foreignId('group_id');
+            $table->foreignId('group_id')->nullable();
             $table->tinyInteger('group_admin')->nullable();
+            $table->tinyInteger('class_num')->nullable();//1為準備好，不再上傳
             $table->tinyInteger('ready')->nullable();//1為準備好，不再上傳
+            $table->unsignedInteger('township_id')->nullable();            
             $table->timestamps();
         });
     }

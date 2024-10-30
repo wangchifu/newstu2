@@ -20,89 +20,95 @@
           </thead>
           <tbody>
             <tr>
-              <td>
+              <th>
                 校名
-              </td>
+              </th>
               <td>
                 {{ $school->name }}
               </td>
-              <td>
+              <th>
                 填報之班級數
-              </td>
+              </th>
               <td>
                 {{ $teachers->count() }}
               </td>
-              <td>
+              <th>
                 填報人數
               </td>
-              <td>
+              <th>
                 {{ $students->count() }}
               </td>
             </tr>
             <tr>
-              <td>
+              <th>
                 男生數
-              </td>
+              </th>
               <td>
                 {{ $student_data['boy'] }}
               </td>
-              <td>
+              <th>
                 女生數
-              </td>
+              </th>
               <td>
                 {{ $student_data['girl'] }}
               </td>
             </tr>
             <tr>
-              <td>
+              <th>
                 一般生
-              </td>
+              </th>
               <td>
                 {{ $student_data['general'] }}
               </td>
-              <td>
+              <th>
                 <span class="text-info">特殊生</span>
-              </td>
+              </th>
               <td>
                 {{ $student_data['special'] }}
               </td>
-              <td>
+              <th>
                 特殊生總減人數
-              </td>
+              </th>
               <td>
                 {{ $student_data['subtract'] }}
               </td>
             </tr>
             <tr>
-              <td>
+              <th>
                 雙胞胎同班
-              </td>
+              </th>
               <td>
                 {{ $student_data['bao2'] }}
               </td>
-              <td>
+              <th>
                 雙胞胎不同班
-              </td>
+              </th>
               <td>
                 {{ $student_data['bao2_not'] }}
               </td>
             </tr>
             <tr>
-              <td>
+              <th>
                 三胞胎全同班
-              </td>
+              </th>
               <td>
                 {{ $student_data['bao3'] }}
               </td>
-              <td>
+              <th>
                 三胞胎全不同班
-              </td>
+              </th>
               <td>
                 {{ $student_data['bao3_not'] }}
               </td>
+              <td>
+
+              </td>
+              <td>
+
+              </td>
             </tr>
             <tr>
-              <td>
+              <th>
                 教師名冊
               </td>
               <td colspan="5">
@@ -144,7 +150,11 @@
                   @if($student->special == 1)
                     <span class="text-info">{{ $student->name }}</span>
                     (-{{ $student->subtract }})
-                    <span class="badge bg-primary">+{{ $student->w_teacher->name }}</span>
+                    @if(!empty($student->w_teacher))
+                      <span class="badge bg-primary">+{{ $student->w_teacher->name }}</span>
+                    @else
+                      <small class="text-danger">未指定</small>
+                    @endif
                   @else
                     {{ $student->name }}
                   @endif

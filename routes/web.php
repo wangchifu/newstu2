@@ -22,9 +22,8 @@ Route::get('pic', [HomeController::class, 'pic'])->name('pic');
 Route::get('glogin', [HomeController::class, 'glogin'])->name('glogin');
 Route::post('gauth', [HomeController::class, 'gauth'])->name('gauth');
 //本機登入
-Route::get('mlogin', [HomeController::class, 'mlogin'])->name('mlogin');
-Route::get('mlogin', [HomeController::class, 'mlogin'])->name('login');
-Route::post('mauth', [HomeController::class, 'mauth'])->name('mauth');
+Route::get('login', [HomeController::class, 'login'])->name('login');
+Route::post('auth', [HomeController::class, 'auth'])->name('auth');
 
 
 /**
@@ -56,6 +55,9 @@ Route::group(['middleware' => 'group_admin'], function () {
     Route::get('start', [GroupAdminController::class, 'start'])->name('start');
     Route::get('group_admin_unlock/{school}', [GroupAdminController::class, 'group_admin_unlock'])->name('group_admin_unlock');
     Route::get('show_student/{school}', [GroupAdminController::class, 'show_student'])->name('show_student');
+    Route::get('show_class/{school}', [GroupAdminController::class, 'show_class'])->name('show_class');
     Route::get('form_class/{school}', [GroupAdminController::class, 'form_class'])->name('form_class');
+    Route::get('delete123/{school}', [GroupAdminController::class, 'delete123'])->name('delete123');
+    Route::get('delete23/{school}', [GroupAdminController::class, 'delete23'])->name('delete23');
     Route::post('go_form/{school}', [GroupAdminController::class, 'go_form'])->name('go_form');
 });

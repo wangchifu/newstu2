@@ -76,3 +76,17 @@ function chk_file_format($file) {
 	if (preg_match($regex,$file))  $chk='OK';
 	Return $chk;
 }
+
+function shuffleAssoc($array) {
+    // 取得陣列的鍵值並打亂順序
+    $keys = array_keys($array);
+    shuffle($keys);
+
+    // 建立新的陣列，保留原鍵值的打亂順序
+    $shuffledArray = [];
+    foreach ($keys as $key) {
+        $shuffledArray[$key] = $array[$key];
+    }
+
+    return $shuffledArray;
+}

@@ -38,7 +38,7 @@
               下載&列印
             </th>
             <th scope="col">
-              刪除 <small class="text-danger">[全部刪除]</small>
+              刪除 <a class="btn btn-outline-danger">全部刪除</a>
             </th>
           </tr>          
         </thead>
@@ -54,26 +54,26 @@
                   $student = \App\Models\Student::where('code',$school->code)->first();
                 ?>
                 {{ $school->name }}
-                @if(!empty($student))
-                  <a href="{{ route('show_student',$school->id) }}">
-                    <small class="text-primary">[檢視]</small>
-                  </a>
+                @if(!empty($student))                
+                  <a href="{{ route('show_student',$school->id) }}" class="btn btn-outline-primary">
+                    檢視名單
+                  </a>                
                 @else
-                  <small class="text-info">[未上傳]</small>
+                  <small class="text-info">未上傳</small>
                 @endif
               </td>
               <td>
                 @if($school->ready)
-                <a href="#" onclick="sw_confirm1('確定？','{{ route('group_admin_unlock',$school->id) }}')">
+                <a href="#!" onclick="sw_confirm1('確定該校改為「未確定」？','{{ route('group_admin_unlock',$school->id) }}')">
                   <i class="bi bi-check-circle text-success"></i>
                 </a>
                 @else
                   @if(!empty($student))
-                    <a href="#" onclick="sw_confirm1('確定？','{{ route('group_admin_unlock',$school->id) }}')">
-                      <i class="bi bi-x-circle text-danger"></i>
+                    <a href="#!" onclick="sw_confirm1('確定該校不再更改？','{{ route('group_admin_unlock',$school->id) }}')">
+                      <i class="bi bi-dash-circle text-dark"></i>
                     </a>
                   @else
-                  <i class="bi bi-dash-circle text-dark"></i>
+                  <i class="bi bi-x-circle text-danger"></i>
                   @endif
                 @endif
               </td>
@@ -86,10 +86,36 @@
               </td>
               <td>
                 @if($school->ready)
-                  <a href="{{ route('form_class',$school->id) }}">
-                    <span class="text-primary">進行編班</span>
-                  </a>
+                  @if(empty($student->class))
+                    <a href="{{ route('form_class',$school->id) }}" class="btn btn-primary">
+                      進行編班
+                    </a>
+                  @else
+                    <h5>
+                      <a href="{{ route('show_class',$school->id) }}" class="btn btn-outline-primary">
+                        編班結果
+                      </a>
+                    </h5>
+                  @endif                  
                 @endif
+              </td>
+              <td>
+
+              </td>
+              <td>
+                
+              </td>
+              <td>
+                
+              </td>
+              <td>
+                @if(!empty($student))      
+                  <a href="#!" class="btn btn-outline-danger" onclick="sw_confirm1('確定刪除名冊、編班資料及導師喔！','{{ route('delete123',$school->id) }}')">1.刪除名冊</a>
+                @endif
+                @if(!empty($student->class))
+                  <a href="#!" class="btn btn-outline-warning" onclick="sw_confirm1('確定刪除編班資料及導師喔！','{{ route('delete23',$school->id) }}')">2.刪除編班</a>
+                @endif
+                <a href="#!" class="btn btn-outline-dark">3.刪除導師</a>
               </td>
             </tr>
             <?php $n++; ?>
@@ -102,10 +128,10 @@
             <i class="bi bi-check-circle text-success"></i> 表示該校已確定一切不再更改，按一下即可解鎖。
           </li>
           <li>
-            <i class="bi bi-x-circle text-danger"></i> 表示該校未確定學生編班屬性，按一下可強制上鎖不讓該校更改。
+            <i class="bi bi-dash-circle text-dark"></i> 表示該校未確定學生編班屬性，按一下可強制上鎖不讓該校更改。
           </li>
           <li>
-            <i class="bi bi-dash-circle text-dark"></i> 表示該校未上傳任何學生。
+            <i class="bi bi-x-circle text-danger"></i> 表示該校未上傳任何學生。
           </li>
           <li>
             若上述學校列表有缺，請洽和東國小資訊組王老師。

@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('semester_year');
             $table->string('no');
             $table->string('class')->nullable();
-            $table->string('num')->nullable();
+            $table->tinyInteger('num')->nullable();
             $table->tinyInteger('sex');
             $table->string('name');
             $table->string('id_number');

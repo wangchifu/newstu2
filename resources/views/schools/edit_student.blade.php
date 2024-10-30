@@ -114,7 +114,7 @@
               </div>
 
               <div class="row">
-                <label class="col-sm-2 col-form-label text-primary">N胎胞</label>
+                <label class="col-sm-2 col-form-label text-primary">N胞胎</label>
                 <div class="col-sm-10">
                   <select class="form-select" aria-label="Default select example" id="type" name="type">
                     <?php 
@@ -128,8 +128,8 @@
                       }
                       if($student->type==2){
                         $select0 = null;
-                        $select1 = "selected";
-                        $select2 = null;
+                        $select1 = null;
+                        $select2 = "selected";
                         $select3 = null;
                         $select4 = null;
                         $select5 = null;

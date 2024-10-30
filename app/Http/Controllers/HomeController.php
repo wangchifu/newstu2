@@ -48,8 +48,12 @@ class HomeController extends Controller
         imagedestroy($im);
     }
 
+    public function login(){
+        return view('auth.login');
+    }
+
     public function glogin(){
-        return view('glogin');
+        return view('auth.glogin');
     }
 
     public function logout(){
@@ -116,7 +120,8 @@ class HomeController extends Controller
                 $att['name'] = $obj['name'];
                 $att['title'] = $obj['title']; 
                 $att['username'] = $username[0];
-                $att['password'] = bcrypt($request->input('password'));                    $att['login_type'] = "gsuite"; 
+                $att['password'] = bcrypt($request->input('password'));                    
+                $att['login_type'] = "gsuite"; 
                 $att['school_id'] = $school->id;                                               
                 $att['group_id'] = $school->group->id; 
                 $user->update($att);                                               
