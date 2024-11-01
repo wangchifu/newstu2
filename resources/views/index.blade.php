@@ -42,10 +42,10 @@
                 <thead>
                   <tr>
                     <th scope="col">#</th>
-                    <th scope="col">學校代碼</th>
-                    <th scope="col">學校名稱</th>
-                    <th scope="col">已編</th>
-                    <th scope="col">日期</th>
+                    <th scope="col" nowrap>學校代碼</th>
+                    <th scope="col" nowrap>學校名稱</th>
+                    <th scope="col" nowrap>已編</th>
+                    <th scope="col" nowrap>日期</th>
                   </tr>
                 </thead>
                 <tbody>

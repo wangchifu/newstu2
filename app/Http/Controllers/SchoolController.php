@@ -164,7 +164,7 @@ class SchoolController extends Controller
             array_push($all_teacher, $one_teacher);
         }
         //先清空
-        Teacher::where('semester_year',$file_name_array[0])->where('code',auth()->user()->school->code)->delete();
+        Teacher::where('code',auth()->user()->school->code)->delete();
         Teacher::insert($all_teacher);
 
         return redirect()->route('upload_students');

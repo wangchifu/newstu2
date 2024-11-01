@@ -28,6 +28,9 @@
                   @endif
                   人                  
                   (男：{{ $student_data[$eng_class[$i]]['boy'] }} 女：{{ $student_data[$eng_class[$i]]['girl'] }})
+                  @if(!empty($student_data[$eng_class[$i]]['teacher']))
+                    導師：{{ $student_data[$eng_class[$i]]['teacher'] }}
+                  @endif
                 </th>
               </tr>              
               <tr>

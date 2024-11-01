@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('code');
             $table->string('semester_year');            
             $table->string('name');            
+            $table->string('class_name')->nullable();    
             $table->timestamps();
         });
     }

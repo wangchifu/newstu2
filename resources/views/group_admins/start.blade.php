@@ -79,43 +79,56 @@
               </td>
               <td>
                @if(!empty($student->class))
-                <span class="text-success">已經編班</span>
+                <span class="text-success">已編班</span>
                @else
-                <span class="text-danger">尚未編班</span>
+                <span class="text-danger">未編班</span>
                @endif
               </td>
               <td>
                 @if($school->ready)
                   @if(empty($student->class))
                     <a href="{{ route('form_class',$school->id) }}" class="btn btn-primary">
-                      進行編班
+                      1.進行編班
                     </a>
                   @else
-                    <h5>
-                      <a href="{{ route('show_class',$school->id) }}" class="btn btn-outline-primary">
-                        編班結果
-                      </a>
-                    </h5>
+                    <a href="{{ route('show_class',$school->id) }}" class="btn btn-outline-primary">
+                      編班結果
+                    </a>
                   @endif                  
                 @endif
               </td>
               <td>
-
+                @if(!empty($student->class) and empty($student->teacher))
+                  <a href="{{ route('form_teacher',$school->id) }}" class="btn btn-primary">
+                    2.編排導師
+                  </a>
+                @endif
+                @if(!empty($student->teacher))
+                  <a href="{{ route('show_teacher',$school->id) }}" class="btn btn-outline-primary">
+                    導師結果
+                  </a>                   
+                @endif
               </td>
               <td>
-                
+                @if(!empty($student->teacher))
+                  <a href="{{ route('form_teacher',$school->id) }}" class="btn btn-primary">
+                    3.編排班序
+                  </a>
+                @endif
               </td>
               <td>
                 
               </td>
               <td>
                 @if(!empty($student))      
-                  <a href="#!" class="btn btn-outline-danger" onclick="sw_confirm1('確定刪除名冊、編班資料及導師喔！','{{ route('delete123',$school->id) }}')">1.刪除名冊</a>
+                  <a href="#!" class="btn btn-outline-danger" onclick="sw_confirm1('確定刪除名冊、編班及導師資料喔？','{{ route('delete123',$school->id) }}')">1.刪除名冊</a>
                 @endif
                 @if(!empty($student->class))
-                  <a href="#!" class="btn btn-outline-warning" onclick="sw_confirm1('確定刪除編班資料及導師喔！','{{ route('delete23',$school->id) }}')">2.刪除編班</a>
+                  <a href="#!" class="btn btn-outline-warning" onclick="sw_confirm1('確定刪除編班及導師資料喔？','{{ route('delete23',$school->id) }}')">2.刪除編班</a>
                 @endif
-                <a href="#!" class="btn btn-outline-dark">3.刪除導師</a>
+                @if(!empty($student->teacher))
+                  <a href="#!" class="btn btn-outline-dark" onclick="sw_confirm1('確定刪除導師資料喔？','{{ route('delete3',$school->id) }}')">3.刪除導師</a>
+                @endif
               </td>
             </tr>
             <?php $n++; ?>

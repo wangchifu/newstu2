@@ -29,6 +29,7 @@ return new class extends Migration
             $table->tinyInteger('subtract')->nullable();//減1~3人
             $table->string('another_no')->nullable();//相關流水號
             $table->string('ps')->nullable();
+            $table->string('teacher')->nullable();
             $table->string('with_teacher')->nullable();
             $table->string('without_teacher')->nullable();
             $table->timestamps();

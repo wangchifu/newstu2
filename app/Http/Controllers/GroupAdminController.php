@@ -121,6 +121,12 @@ class GroupAdminController extends Controller
             $student_data[$student->class]['st'][$student->num]['special'] = $student->special;
             $student_data[$student->class]['st'][$student->num]['name'] = $student->name;
             $student_data[$student->class]['st'][$student->num]['sex'] = $student->sex;
+            if(!empty($student->teacher)){
+                $student_data[$student->class]['teacher'] = $student->teacher->name;
+            }else{
+                $student_data[$student->class]['teacher'] = null;
+            }
+            
             if(!isset($student_data[$student->class]['all'])) $student_data[$student->class]['all'] = 0;
             if(!isset($student_data[$student->class]['boy'])) $student_data[$student->class]['boy'] = 0;
             if(!isset($student_data[$student->class]['girl'])) $student_data[$student->class]['girl'] = 0;
@@ -165,6 +171,13 @@ class GroupAdminController extends Controller
     function delete23(School $school){
         $att['class'] = null;
         $att['num'] = null;
+        $att['teacher'] = null;
+        Student::where('code',$school->code)->update($att);
+        return redirect()->route('start');
+    }
+
+    function delete3(School $school){
+        $att['teacher_id'] = null;        
         Student::where('code',$school->code)->update($att);
         return redirect()->route('start');
     }
@@ -778,4 +791,102 @@ class GroupAdminController extends Controller
         return redirect()->route('start');
         
     }
+
+    function form_teacher(School $school){
+        if($school->group_id != auth()->user()->group_id){
+            return back();    
+        }
+        $teachers = Teacher::where('code',$school->code)->get();
+        $eng_class = [0=>'A1',1=>'A2',2=>'A3',3=>'A4',4=>'A5',5=>'A6',6=>'A7',7=>'A8',8=>'A9',9=>'A10',10=>'A11',11=>'A12',12=>'A13',13=>'A14',14=>'A15',15=>'A16',16=>'A17',17=>'A18',18=>'A19',19=>'A20',20=>'A21',21=>'A22',22=>'A23',23=>'A24',24=>'A25',25=>'A26'];
+        
+        $with_students = [];
+        $with_teachers = [];        
+        for($n=0;$n<$school->class_num;$n++){
+            $check_student =  Student::where('class',$eng_class[$n])->where('with_teacher','<>',null)->first();
+            if(!empty($check_student->id)){
+                $with_students[$eng_class[$n]] = $check_student->name;
+                $with_teachers[$eng_class[$n]] = $check_student->w_teacher->name;
+            }
+            
+        }
+        
+        
+        $data = [
+            'school'=>$school,
+            'teachers'=>$teachers,
+            'eng_class'=>$eng_class,
+            'with_students'=>$with_students,
+            'with_teachers'=>$with_teachers,
+        ];
+        return view('group_admins.form_teacher',$data);
+    }
+
+    function go_form_teacher(Request $request,School $school){
+        if(empty($request->input('random_seed'))){
+            return back()->withErrors(['errors' => ['錯誤：亂數種子不可以空著！']]);
+        }
+        if((int)$request->input('random_seed') < 1000){
+            return back()->withErrors(['errors' => ['錯誤：亂數種子要四位數字！']]);
+        };
+        $students = Student::where('code',$school->code)->get();
+        if(count($students) < 29){
+            return back()->withErrors(['errors' => ['錯誤：學生數須大於28人才能編班！']]);
+        }
+        srand(rand(1000, 9999));  // 設定亂數種子
+
+        $teachers = Teacher::where('code',$school->code)->get();
+        $teacher_array = [];
+        foreach($teachers as $teacher){
+            $teacher_array[$teacher->id] = $teacher->name;
+        }
+
+        $att = $request->all();
+        $assign_teacher = $att['teacher'];     
+        foreach($assign_teacher as $k=>$v){
+            if($v <> 0){
+                $class_teacher[$k] = $v;
+                unset($teacher_array[$v]);
+            }            
+        }
+        foreach($assign_teacher as $k=>$v){
+            if($v == 0){
+                $teacher_id = array_rand($teacher_array);
+                $class_teacher[$k] = (string)$teacher_id;
+                unset($teacher_array[$teacher_id]);
+            }
+            
+        }
+
+        $students = Student::where('code',$school->code)->get();
+        foreach($students as $student){
+            foreach($class_teacher as $k=>$v){
+                if($student->class == $k){
+                    $att2['teacher_id'] = $v;
+                    $student->update($att2);
+                }
+            }
+            
+        }
+        
+        return redirect()->route('start');
+
+    }
+
+    public function show_teacher(School $school){
+        if($school->group_id != auth()->user()->group_id){
+            return back();    
+        }
+        $class_teachers = Student::where('code',$school->code)->orderBy('class')->get()->groupBy('class');        
+
+//        dd($class_teachers);
+        $student = Student::where('code',$school->code)->first();
+        $semester_year = $student->semester_year;
+        $data = [
+            'semester_year'=>$semester_year,
+            'school'=>$school,
+            'class_teachers'=>$class_teachers,
+        ];
+        return view('group_admins.show_teacher',$data);
+    }
+
 }

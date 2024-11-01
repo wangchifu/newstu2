@@ -14,6 +14,6 @@ class Group extends Model
 
     public function schools()
     {
-        return $this->hasMany(School::class);
+        return $this->hasMany(School::class)->orderBy('group_admin','DESC');
     }
 }

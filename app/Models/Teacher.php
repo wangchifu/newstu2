@@ -12,5 +12,6 @@ class Teacher extends Model
         'code',
         'semester_year',
         'name',        
+        'class_name',        
     ];
 }

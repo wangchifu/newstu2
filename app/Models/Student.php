@@ -23,9 +23,14 @@ class Student extends Model
         'subtract',
         'another_no',
         'ps',
+        'teacher_id',
         'with_teacher',
         'without_teacher',
     ];
+    public function teacher()
+    {
+        return $this->belongsTo(Teacher::class,'teacher_id','id');
+    }
     public function w_teacher()
     {
         return $this->belongsTo(Teacher::class,'with_teacher','id');
