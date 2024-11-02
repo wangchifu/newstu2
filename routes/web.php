@@ -64,4 +64,7 @@ Route::group(['middleware' => 'group_admin'], function () {
     Route::get('form_teacher/{school}', [GroupAdminController::class, 'form_teacher'])->name('form_teacher');
     Route::post('go_form_teacher/{school}', [GroupAdminController::class, 'go_form_teacher'])->name('go_form_teacher');
     Route::get('show_teacher/{school}', [GroupAdminController::class, 'show_teacher'])->name('show_teacher');
+    Route::get('form_order/{school}', [GroupAdminController::class, 'form_order'])->name('form_order');
+    Route::post('go_form_order/{school}', [GroupAdminController::class, 'go_form_order'])->name('go_form_order');
+    Route::get('print/{school}', [GroupAdminController::class, 'print'])->name('print');
 });

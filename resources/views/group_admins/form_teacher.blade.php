@@ -32,7 +32,7 @@
               <thead>
                 <tr>
                   <th colspan="2">                    
-                    <h2 class="text-primary">各校導師編排填寫表單</h2>
+                    <h2 class="text-primary">導師編排填寫表單</h2>
                   </th>
                 </tr>
               </thead>

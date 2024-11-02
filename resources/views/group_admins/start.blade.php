@@ -92,7 +92,7 @@
                     </a>
                   @else
                     <a href="{{ route('show_class',$school->id) }}" class="btn btn-outline-primary">
-                      編班結果
+                      1.編班結果
                     </a>
                   @endif                  
                 @endif
@@ -105,19 +105,22 @@
                 @endif
                 @if(!empty($student->teacher))
                   <a href="{{ route('show_teacher',$school->id) }}" class="btn btn-outline-primary">
-                    導師結果
+                    2.導師結果
                   </a>                   
                 @endif
               </td>
               <td>
                 @if(!empty($student->teacher))
-                  <a href="{{ route('form_teacher',$school->id) }}" class="btn btn-primary">
+                  <a href="{{ route('form_order',$school->id) }}" class="btn btn-primary">
                     3.編排班序
                   </a>
                 @endif
               </td>
               <td>
-                
+                @if(!empty($student->class))
+                <a href="" class="btn btn-secondary"><i class="bi bi-cloud-arrow-down-fill"></i> 下載</a>
+                <a href="{{ route('print',$school->id) }}" class="btn btn-success" target="_blank"><i class="bi bi-printer-fill"></i> 列印</a>
+                @endif
               </td>
               <td>
                 @if(!empty($student))      

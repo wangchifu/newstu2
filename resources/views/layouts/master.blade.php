@@ -109,6 +109,14 @@
                  }
               });
           }
+
+          function sw_alert(title,message,action){
+            Swal.fire({
+            title: title,
+            text: message,
+            icon: action,
+                });
+            }
   </script>
 </body>
 

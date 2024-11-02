@@ -1,7 +1,7 @@
 @extends('layouts.master')
 
 @section('page_title')
-<h1>{{ $semester_year }}學年學生編班類別</h1>
+<h1>{{ $semester_year }}學年學生編班類別設定</h1>
 @endsection
 
 @section('content')
