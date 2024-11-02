@@ -10,6 +10,31 @@
   <div class="card">
     <div class="card-body">
       <h5 class="card-title">「{{ $group->name }}」學校列表</h5>   
+      <?php
+      if(isset($_COOKIE["real".$group->id])){
+        if($_COOKIE["real".$group->id] == 1){
+          $display="none";
+          $checked = "checked";
+        }else{
+          $display="";
+          $checked = "";
+        }
+      }else{
+        $display="";
+        $checked = "";
+      }
+      ?>
+      <input type="checkbox" id="toggleCheckbox" onclick="toggleCellVisibility()" {{ $checked }}> 
+      <label for="toggleCheckbox">正式編班請打勾</label>
+      @if(isset($_COOKIE["real".$group->id]))
+        <div id="change_mode" class="badge bg-success">
+          @if($_COOKIE["real".$group->id] == 1)            
+            正式執行
+          @else            
+            測試當中
+          @endif
+        </div>      
+      @endif
       <table class="table table-hover">
         <thead>
           <tr>
@@ -37,8 +62,8 @@
             <th scope="col">
               下載&列印
             </th>
-            <th scope="col">
-              刪除 <a class="btn btn-outline-danger">全部刪除</a>
+            <th scope="col" class="toggle-cell" style="display: {{ $display }}">
+              刪除 <a class="btn btn-outline-danger" href="#!" onclick="sw_confirm1('確定刪除這個分區所有的學生及導師資料喔？','{{ route('delete_all',$group->id) }}')"><i class="bi bi-rocket-fill"></i> 全部刪除</a>
             </th>
           </tr>          
         </thead>
@@ -56,7 +81,7 @@
                 {{ $school->name }}
                 @if(!empty($student))                
                   <a href="{{ route('show_student',$school->id) }}" class="btn btn-outline-primary">
-                    檢視名單
+                    檢視名冊
                   </a>                
                 @else
                   <small class="text-info">未上傳</small>
@@ -118,19 +143,19 @@
               </td>
               <td>
                 @if(!empty($student->class))
-                <a href="" class="btn btn-secondary"><i class="bi bi-cloud-arrow-down-fill"></i> 下載</a>
+                <a href="{{ route('export',$school->id) }}" class="btn btn-secondary" target="_blank"><i class="bi bi-cloud-arrow-down-fill"></i> 下載</a>
                 <a href="{{ route('print',$school->id) }}" class="btn btn-success" target="_blank"><i class="bi bi-printer-fill"></i> 列印</a>
                 @endif
               </td>
-              <td>
+              <td class="toggle-cell" style="display: {{ $display }}">
                 @if(!empty($student))      
-                  <a href="#!" class="btn btn-outline-danger" onclick="sw_confirm1('確定刪除名冊、編班及導師資料喔？','{{ route('delete123',$school->id) }}')">1.刪除名冊</a>
+                  <a href="#!" class="btn btn-outline-danger" onclick="sw_confirm1('確定刪除名冊、編班及導師資料喔？','{{ route('delete123',$school->id) }}')">刪除名冊</a>
                 @endif
                 @if(!empty($student->class))
-                  <a href="#!" class="btn btn-outline-warning" onclick="sw_confirm1('確定刪除編班及導師資料喔？','{{ route('delete23',$school->id) }}')">2.刪除編班</a>
+                  <a href="#!" class="btn btn-outline-warning" onclick="sw_confirm1('確定刪除編班及導師資料喔？','{{ route('delete23',$school->id) }}')">1.刪除編班</a>
                 @endif
                 @if(!empty($student->teacher))
-                  <a href="#!" class="btn btn-outline-dark" onclick="sw_confirm1('確定刪除導師資料喔？','{{ route('delete3',$school->id) }}')">3.刪除導師</a>
+                  <a href="#!" class="btn btn-outline-dark" onclick="sw_confirm1('確定刪除導師資料喔？','{{ route('delete3',$school->id) }}')">2.刪除導師</a>
                 @endif
               </td>
             </tr>
@@ -138,23 +163,56 @@
           @endforeach
         </tbody>
       </table>
-      <p>
-        <ul>
-          <li>
-            <i class="bi bi-check-circle text-success"></i> 表示該校已確定一切不再更改，按一下即可解鎖。
-          </li>
-          <li>
-            <i class="bi bi-dash-circle text-dark"></i> 表示該校未確定學生編班屬性，按一下可強制上鎖不讓該校更改。
-          </li>
-          <li>
-            <i class="bi bi-x-circle text-danger"></i> 表示該校未上傳任何學生。
-          </li>
-          <li>
-            若上述學校列表有缺，請洽和東國小資訊組王老師。
-          </li>
-        </ul>
-      </p>
+      <div class="toggle-cell" style="display: {{ $display }}">
+        <p>
+          <ul>
+            <li>
+              <i class="bi bi-check-circle text-success"></i> 表示該校已確定一切不再更改，按一下即可解鎖。
+            </li>
+            <li>
+              <i class="bi bi-dash-circle text-dark"></i> 表示該校未確定學生編班屬性，按一下可強制上鎖不讓該校更改。
+            </li>
+            <li>
+              <i class="bi bi-x-circle text-danger"></i> 表示該校未上傳任何學生。
+            </li>
+            <li>
+              若上述學校列表有缺，請洽和東國小資訊組王老師。
+            </li>
+          </ul>
+        </p>
+      </div>
     </div>
   </div>
 </section>
+<script>
+  function toggleCellVisibility() {
+    const cells = document.querySelectorAll(".toggle-cell"); // 選取所有帶有 "toggle-cell" class 的 <td> 元素
+    const checkbox = document.getElementById("toggleCheckbox");
+
+    // 根據勾選狀態顯示或隱藏所有目標單元格
+    cells.forEach(cell => {
+        mode = document.getElementById("change_mode");
+        if(checkbox.checked){
+          cell.style.display = "none";
+          setCookie('real{{ $school->group_id }}',1,100);
+          mode.innerHTML = "正式執行";
+        }else{
+          cell.style.display = "";
+          setCookie('real{{ $school->group_id }}',0,100);
+          mode.innerHTML = "測試當中";
+        }
+        //cell.style.display = checkbox.checked ? "none" : ""; // 隱藏或顯示單元格        
+    });
+  }
+
+  function setCookie(name, value, days) {
+      let expires = "";
+      if (days) {
+          const date = new Date();
+          date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+          expires = "; expires=" + date.toUTCString();
+      }
+      document.cookie = name + "=" + (value || "") + expires + "; path=/";
+  }
+</script>
 @endsection

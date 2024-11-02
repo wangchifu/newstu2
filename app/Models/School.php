@@ -9,7 +9,7 @@ class School extends Model
 {
     use HasFactory;
     protected $fillable = [
-        'name','code','group_id','group_admin','class_num','ready','township_id',
+        'name','code','group_id','group_admin','class_num','ready','situation','township_id',
     ];
     public function group()
     {

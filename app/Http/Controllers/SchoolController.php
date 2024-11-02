@@ -297,13 +297,14 @@ class SchoolController extends Controller
         $att = $request->all();
         //dd($att);
         if($att['special']==null){
-            if( $att['subtract'] == 0 and $att['with_teacher'] == null){
+            if( $att['subtract'] == 0 and $att['with_teacher'] == null){            
             }else{
                 return back()->withErrors(['errors' => ['錯誤：一般生設定有問題！']]);
             }
             
         }elseif($att['special']==1){            
-            if($att['subtract'] > 0 and $att['with_teacher'] != null){
+            //if($att['subtract'] > 0 and $att['with_teacher'] != null){  暫時不檢查綁老師
+            if($att['subtract'] > 0){
 
             }else{
                 return back()->withErrors(['errors' => ['錯誤：特殊生設定有問題！']]);
@@ -361,7 +362,7 @@ class SchoolController extends Controller
         ->get();
         foreach($special_students as $student){
             if(empty($student->with_teacher)){
-                return back()->withErrors(['errors' => ['錯誤：無法送出！有特殊生沒有指定導師！']]);
+                //return back()->withErrors(['errors' => ['錯誤：無法送出！有特殊生沒有指定導師！']]);  暫時不規定綁老師
             }
         }
         $att['ready'] = 1;

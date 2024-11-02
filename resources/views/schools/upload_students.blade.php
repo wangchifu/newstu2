@@ -1,7 +1,7 @@
 @extends('layouts.master')
 
 @section('page_title')
-<h1>上傳老師及學生名單</h1>
+<h1>上傳老師及學生名冊</h1>
 @endsection
 
 @section('content')
@@ -39,8 +39,8 @@
   <div class="row">
     <div class="card">
       <div class="card-body">
-        <h5 class="card-title">{{ $semester_year }}學年已匯入的老師及學生名單</h5>    
-        <span class="text-danger">以下資料供參，請至右上角「學校名稱」-<a href="{{ route('student_type') }}">「<i class="bi bi-gear"></i> 設定學生</a>」繼續更多的設定！</span>    
+        <h5 class="card-title">{{ $semester_year }}學年已匯入的老師及學生名冊</h5>    
+        <span class="text-danger">以下資料供參，請至右上角「學校名稱」-「<a href="{{ route('student_type') }}"><i class="bi bi-gear"></i> 設定學生</a>」繼續更多的設定！</span>    
         <hr>        
         校名：{{ auth()->user()->school->name }} 班級數：{{ $class_num }} 學生數：{{ count($student_data[$semester_year]) }}<br>
         老師：

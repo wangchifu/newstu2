@@ -60,7 +60,13 @@
                         @endif
                         {{ $school->name }}
                       </td>
-                      <td><i class="bi bi-check-circle"></i></td>
+                      <td>
+                        @if(!empty($school->situation))
+                          <i class="bi bi-check-circle text-success"></i>
+                        @else
+                          <i class="bi bi-x-circle text-danger"></i>
+                        @endif
+                      </td>
                       <td>2016-05-25</td>
                     </tr>
                     <?php $n++; ?>

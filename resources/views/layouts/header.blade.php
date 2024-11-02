@@ -42,7 +42,7 @@
             <li>
               <a class="dropdown-item d-flex align-items-center" href="{{ route('upload_students') }}">
                 <i class="bi bi-person"></i>
-                <span>上傳名單</span>
+                <span>上傳名冊</span>
               </a>
             </li>
             <li>

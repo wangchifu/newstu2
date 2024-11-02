@@ -60,6 +60,7 @@ Route::group(['middleware' => 'group_admin'], function () {
     Route::get('delete123/{school}', [GroupAdminController::class, 'delete123'])->name('delete123');
     Route::get('delete23/{school}', [GroupAdminController::class, 'delete23'])->name('delete23');
     Route::get('delete3/{school}', [GroupAdminController::class, 'delete3'])->name('delete3');
+    Route::get('delete_all/{group}', [GroupAdminController::class, 'delete_all'])->name('delete_all');
     Route::post('go_form/{school}', [GroupAdminController::class, 'go_form'])->name('go_form');
     Route::get('form_teacher/{school}', [GroupAdminController::class, 'form_teacher'])->name('form_teacher');
     Route::post('go_form_teacher/{school}', [GroupAdminController::class, 'go_form_teacher'])->name('go_form_teacher');
@@ -67,4 +68,5 @@ Route::group(['middleware' => 'group_admin'], function () {
     Route::get('form_order/{school}', [GroupAdminController::class, 'form_order'])->name('form_order');
     Route::post('go_form_order/{school}', [GroupAdminController::class, 'go_form_order'])->name('go_form_order');
     Route::get('print/{school}', [GroupAdminController::class, 'print'])->name('print');
+    Route::get('export/{school}', [GroupAdminController::class, 'export'])->name('export');
 });

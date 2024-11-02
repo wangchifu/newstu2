@@ -46,15 +46,15 @@
                   <td>
                     <table>                      
                       @for($n=0;$n<$school->class_num;$n++)
-                        <tr>
-                          <td style="width:50px;">
-                            導師
-                          </td>
+                        <tr>                          
                           <td style="width:50px;">
                             <input type="text" name="class_name[{{ $eng_class[$n] }}]" value="{{ $eng_class[$n] }}" class="form-control" readonly="readonly" style="color:red">
                           </td>
+                          <td style="width:50px;">
+                            導師
+                          </td>
                           <td>
-                            <select class="form-control" name="teacher[{{ $eng_class[$n] }}]">                              
+                            <select class="form-control select-option" name="teacher[{{ $eng_class[$n] }}]">                              
                               @if(isset($with_teachers[$eng_class[$n]]))
                                 @foreach($teachers as $teacher)           
                                   @if($with_teachers[$eng_class[$n]] == $teacher->name)                                                         
@@ -75,6 +75,9 @@
                             @if(isset($with_teachers[$eng_class[$n]]))
                               <small class="text-secondary">({{ $with_students[$eng_class[$n]] }} 所綁定)</small>
                             @endif
+                            @if(isset($without_teachers[$eng_class[$n]]))
+                              <small class="text-secondary">(不可為 {{ $without_teachers[$eng_class[$n]] }})</small>
+                            @endif
                           </td>                    
                         </tr>                        
                       @endfor
@@ -86,12 +89,15 @@
                   <td><input type="text" name="random_seed" class="form-control" value="{{ rand(1000,9999) }}" id="random_seed" style="color:red;font-size:30px;" maxlength="4" required></td>
                 </tr>
               </tbody>            
-            </table>                      
+            </table>
+            @foreach($without_teachers as $k=>$v)
+              <input type="hidden" name="without_teacher[{{ $k }}]" value="{{ $v }}">
+            @endforeach
             </form>
             @include('layouts.errors')
             <a href="{{ route('start') }}" class="btn btn-secondary"><i class="bi bi-chevron-double-left"></i> 返回</a>
             <a href="#" class="btn btn-success" onclick="new_seed()"><i class="bi bi-arrow-counterclockwise"></i> 重新取得亂數種子</a>
-            <a href="#" class="btn btn-primary" onclick="sw_confirm3('開始編班嗎？','go_form')"><i class="bi bi-play-fill"></i> 開始編導師</a>            
+            <a href="#" class="btn btn-primary" onclick="check_repeat('go_form')"><i class="bi bi-play-fill"></i> 開始編導師</a>            
             <script>
               function new_seed(){
                 var r = Math.floor(Math.random() * (9999 - 1000 + 1)) + 1000;
@@ -127,6 +133,30 @@
               }, 1000); // 延遲一秒後重新開始
           }
       }
+
+      function check_repeat(id){
+      const selectElements = document.querySelectorAll('.select-option'); // 取得所有 select 元素
+      const selectedValues = [];
+
+      // 遍歷所有 select 元素並獲取值
+      selectElements.forEach(select => {
+          const value = select.value;
+          if (value) { // 排除空選項
+              selectedValues.push(value);
+          }
+      });
+
+      // 過濾掉 value 為 "0" 的選項，再檢查是否有重複
+      const filteredValues = selectedValues.filter(value => value !== "0");
+      // 檢查是否有重複的選項      
+      const hasDuplicates = filteredValues.some((item, index) => filteredValues.indexOf(item) !== index);
+
+      if (hasDuplicates) {
+          sw_alert('錯誤！','有選到重複的老師！','error');
+      }else{
+        sw_confirm3('確定？',id);
+      }
+    }
 
   function sw_confirm3(message,id) {
               Swal.fire({

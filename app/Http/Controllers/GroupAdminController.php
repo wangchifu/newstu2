@@ -3,9 +3,12 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Group;
 use App\Models\School;
 use App\Models\Student;
 use App\Models\Teacher;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 class GroupAdminController extends Controller
 {
@@ -159,9 +162,25 @@ class GroupAdminController extends Controller
         return view('group_admins.form_class',$data);
     }
 
+    function delete_all(Group $group){
+        $schools = School::where('group_id',$group->id)->get();
+        foreach($schools as $school){
+            $att['class_num'] = null;
+            $att['situation'] = null;
+            $att['ready'] = null;
+            $school->update($att);
+
+            Student::where('code',$school->code)->delete();
+            Teacher::where('code',$school->code)->delete();
+        }
+            
+        return redirect()->route('start');
+    }
+
     function delete123(School $school){
         $att['class_num'] = null;
         $att['ready'] = null;
+        $att['situation'] = null;
         $school->update($att);
         Student::where('code',$school->code)->delete();
         Teacher::where('code',$school->code)->delete();
@@ -171,8 +190,12 @@ class GroupAdminController extends Controller
     function delete23(School $school){
         $att['class'] = null;
         $att['num'] = null;
-        $att['teacher'] = null;
+        $att['teacher_id'] = null;
         Student::where('code',$school->code)->update($att);
+
+        $att2['situation'] = null;
+        $school->update($att2);
+
         return redirect()->route('start');
     }
 
@@ -193,6 +216,13 @@ class GroupAdminController extends Controller
         if(count($students) < 29){
             return back()->withErrors(['errors' => ['錯誤：學生數須大於28人才能編班！']]);
         }
+
+         //有問題時，重新編一次
+        $form_error = 1;
+        form_again:
+        
+        if($form_error > 100) dd('設定一定有問題，導致編了100次也沒編出來！很可能是不能同班的，被一直編同班！找出來原因才能解決了！');
+
         srand(rand(1000, 9999));  // 設定亂數種子
         $school = School::where('code',$school->code)->first();
         $class_num = $school->class_num;//班級數
@@ -208,6 +238,7 @@ class GroupAdminController extends Controller
         $bao3_not = [];//三胞不同班
         $bao3_not2 = [];
         $with_teacher = [];//指定導師
+        $new_class = [];
         foreach($students as $student){
             if($student->special==1){
                 $special[$student->no] = $student->name;
@@ -461,8 +492,7 @@ class GroupAdminController extends Controller
         }    
 
         //沒有指定老師，就特殊生自己分發
-        //$i=0;       //班級接下去
-        /**
+        //$i=0;       //班級接下去        
         foreach($special as $k=>$v){
             if(isset($boy[$k])){
                 $new_class[$i]['boy'][$k] = $v;
@@ -479,7 +509,7 @@ class GroupAdminController extends Controller
             $i++;
             if($i==$class_num) $i=0;
         }
-        */
+        
                 
         //打亂特殊生的班
         shuffle($new_class);
@@ -741,6 +771,48 @@ class GroupAdminController extends Controller
             if(empty($boy) and empty($girl)) break;
         }
 
+
+
+        //檢查一下 是否把不可同老師的 分到同一班             
+        foreach($students as $student){
+            $check_with[$student->no] = $student->with_teacher;
+            $check_without[$student->no] = $student->without_teacher;
+        }        
+        foreach($new_class as $k=>$v){
+            foreach($v['boy'] as $k1=>$v1){
+                foreach($v['boy'] as $k2=>$v2){
+                    if($check_with[$k1]==$check_without[$k2] and !empty($check_with[$k1]) and !empty($check_without[$k2])){
+                        $form_error++;
+                        goto form_again;
+                    }
+                }
+                foreach($v['girl'] as $k2=>$v2){
+                    if($check_with[$k1]==$check_without[$k2] and !empty($check_with[$k1]) and !empty($check_without[$k2])){
+                        $form_error++;
+                        goto form_again;
+                    }
+                }
+            }
+            foreach($v['girl'] as $k1=>$v1){
+                foreach($v['boy'] as $k2=>$v2){
+                    if($check_with[$k1]==$check_without[$k2] and !empty($check_with[$k1]) and !empty($check_without[$k2])){
+                        $form_error++;
+                        goto form_again;
+                    }
+                }
+                foreach($v['girl'] as $k2=>$v2){
+                    if($check_with[$k1]==$check_without[$k2] and !empty($check_with[$k1]) and !empty($check_without[$k2])){
+                        $form_error++;
+                        goto form_again;
+                    }
+                }
+            }
+        }
+
+        //dd('通過！');
+
+
+
         //再打亂一次
         //shuffle($new_class);
 
@@ -788,6 +860,9 @@ class GroupAdminController extends Controller
             $student->update($att);
         }
 
+        $att2['situation'] = 1;
+        $school->update($att2);
+
         return redirect()->route('start');
         
     }
@@ -806,8 +881,17 @@ class GroupAdminController extends Controller
             if(!empty($check_student->id)){
                 $with_students[$eng_class[$n]] = $check_student->name;
                 $with_teachers[$eng_class[$n]] = $check_student->w_teacher->name;
-            }
-            
+            }            
+        }
+        $without_teachers = [];        
+        for($n=0;$n<$school->class_num;$n++){
+            $check_students =  Student::where('class',$eng_class[$n])->where('without_teacher','<>',null)->get();            
+            if(count($check_students) > 0){                
+                foreach($check_students as $student){
+                    if(!isset($without_teachers[$eng_class[$n]])) $without_teachers[$eng_class[$n]] = "";
+                    $without_teachers[$eng_class[$n]] .= $student->wo_teacher->name.",";
+                }                
+            }            
         }
         
         
@@ -817,11 +901,12 @@ class GroupAdminController extends Controller
             'eng_class'=>$eng_class,
             'with_students'=>$with_students,
             'with_teachers'=>$with_teachers,
+            'without_teachers'=>$without_teachers,
         ];
         return view('group_admins.form_teacher',$data);
     }
 
-    function go_form_teacher(Request $request,School $school){
+    function go_form_teacher(Request $request,School $school){        
         if(empty($request->input('random_seed'))){
             return back()->withErrors(['errors' => ['錯誤：亂數種子不可以空著！']]);
         }
@@ -842,20 +927,39 @@ class GroupAdminController extends Controller
 
         $att = $request->all();
         $assign_teacher = $att['teacher'];     
+                
+        //先把指定的老師分下去
         foreach($assign_teacher as $k=>$v){
             if($v <> 0){
                 $class_teacher[$k] = $v;
                 unset($teacher_array[$v]);
+                unset($assign_teacher[$k]);
             }            
         }
+                
+    
+        //再分指定不可以的老師
+        $without_teacher = [];                
+        foreach($att['without_teacher'] as $k=>$v){
+            $v = substr($v,0,-1);            
+            $without_teacher = explode(",",$v);                
+            $new_teacher_array = array_diff($teacher_array,$without_teacher);            
+            $teacher_id = array_rand($new_teacher_array);            
+            $class_teacher[$k] = (string)$teacher_id;                
+            unset($teacher_array[$teacher_id]);                        
+            unset($assign_teacher[$k]);
+        }             
+                
+
+        //最後分亂數
         foreach($assign_teacher as $k=>$v){
             if($v == 0){
                 $teacher_id = array_rand($teacher_array);
                 $class_teacher[$k] = (string)$teacher_id;
                 unset($teacher_array[$teacher_id]);
-            }
-            
-        }
+                unset($assign_teacher[$k]);
+            }            
+        }        
 
         $students = Student::where('code',$school->code)->get();
         foreach($students as $student){
@@ -938,13 +1042,13 @@ class GroupAdminController extends Controller
             //$student_data[$student->class]['st'][$student->num]['special'] = $student->special;
             $student_data[$student->class]['st'][$student->num]['name'] = $student->name;
             $student_data[$student->class]['st'][$student->num]['sex'] = $student->sex;
-            /**
+            
             if(!empty($student->teacher)){
                 $student_data[$student->class]['teacher'] = $student->teacher->name;
             }else{
                 $student_data[$student->class]['teacher'] = null;
             }                
-            
+            /**
             if(!isset($student_data[$student->class]['all'])) $student_data[$student->class]['all'] = 0;
             if(!isset($student_data[$student->class]['boy'])) $student_data[$student->class]['boy'] = 0;
             if(!isset($student_data[$student->class]['girl'])) $student_data[$student->class]['girl'] = 0;
@@ -964,6 +1068,85 @@ class GroupAdminController extends Controller
             'student_data'=>$student_data,
         ];
         return view('group_admins.print',$data);
+    }
+
+    public function export(School $school){
+        if($school->group_id != auth()->user()->group_id){
+            return back();    
+        }
+        $students = Student::where('code',$school->code)
+            ->orderBy('class')->orderBy('num')->get();
+        $teachers = Teacher::where('code',$school->code)->get();
+        $student = Student::where('code',$school->code)->orderBy('class')->orderBy('num')->first();
+        $semester_year = $student->semester_year;
+        $eng_class = [0=>'A1',1=>'A2',2=>'A3',3=>'A4',4=>'A5',5=>'A6',6=>'A7',7=>'A8',8=>'A9',9=>'A10',10=>'A11',11=>'A12',12=>'A13',13=>'A14',14=>'A15',15=>'A16',16=>'A17',17=>'A18',18=>'A19',19=>'A20',20=>'A21',21=>'A22',22=>'A23',23=>'A24',24=>'A25',25=>'A26'];
+        
+        foreach($students as $student){            
+            $student_data[$student->class]['st'][$student->num]['no'] = $student->no;                        
+            $student_data[$student->class]['st'][$student->num]['name'] = $student->name;
+            $student_data[$student->class]['st'][$student->num]['sex'] = $student->sex;
+        }
+
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+
+        // 設置工作表內容
+        $sheet->setCellValue('A1', '校名');
+        $sheet->setCellValue('B1', '彰化縣'.$school->name);
+        $sheet->setCellValue('C1', '班級數');
+        $sheet->setCellValue('D1', $school->class_num);
+        $sheet->setCellValue('E1', count($students));
+        $cell_name = [1=>'A',2=>'B',3=>'C',4=>'D',5=>'E',6=>'F',7=>'G',8=>'H',9=>'I',10=>'J',11=>'K',12=>'L',13=>'M',14=>'N',15=>'O',16=>'P',17=>'Q',18=>'R',19=>'S',20=>'T',21=>'U',22=>'V',23=>'W',24=>'X',25=>'Y',26=>'Z'];
+        $eng_class = [1=>'A1',2=>'A2',3=>'A3',4=>'A4',5=>'A5',6=>'A6',7=>'A7',8=>'A8',9=>'A9',10=>'A10',11=>'A11',12=>'A12',13=>'A13',14=>'A14',15=>'A15',16=>'A16',17=>'A17',18=>'A18',19=>'A19',20=>'A20',21=>'A21',22=>'A22',23=>'A23',24=>'A24',25=>'A25',26=>'A26'];
+        $class_eng = array_flip($eng_class);
+        $n=1;
+        foreach($teachers as $teacher){
+            $sheet->setCellValue($cell_name[$n].'2', $teacher->name);
+            $n++;
+        }
+        $sheet->setCellValue('A3', '流水號');
+        $sheet->setCellValue('B3', '班級');
+        $sheet->setCellValue('C3', '座號');
+        $sheet->setCellValue('D3', '性別');
+        $sheet->setCellValue('E3', '姓名');
+        $sheet->setCellValue('F3', '身分證字號');
+        $sheet->setCellValue('G3', '原就讀學校');
+        $sheet->setCellValue('H3', '編班類別');
+        $sheet->setCellValue('I3', '相關流水號');
+        $sheet->setCellValue('J3', '備註');        
+
+        $n=4;
+        foreach($students as $student){
+            $sheet->setCellValue('A'.$n, $student->no);
+            $sheet->setCellValue('B'.$n, $class_eng[$student->class]);
+            $sheet->setCellValue('C'.$n, $student->num);
+            $sheet->setCellValue('D'.$n, $student->sex);
+            $sheet->setCellValue('E'.$n, $student->name);
+            $sheet->setCellValue('F'.$n, $student->id_number);
+            $sheet->setCellValue('G'.$n, $school->name);
+            $sheet->setCellValue('H'.$n, $student->type);
+            $sheet->setCellValue('I'.$n, $student->another_no);
+            $sheet->setCellValue('J'.$n, "");
+            $n++;
+        }
+
+
+        // 設置標題
+        $sheet->setTitle('學生編班資料');
+
+
+        $filename = $semester_year."_".$school->code."_".date('Ymd')."_OK";
+        // 設定 HTTP 標頭，強制瀏覽器下載文件
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment;filename="'.$filename.'.xlsx"');
+        header('Cache-Control: max-age=0');
+        header('Cache-Control: max-age=1'); // IE支援
+
+        // 建立 Xlsx 寫入器並輸出
+        $writer = new Xlsx($spreadsheet);
+        $writer->save('php://output'); // 將文件輸出到瀏覽器
+
+        exit;
     }
 
 }

@@ -21,6 +21,7 @@ return new class extends Migration
             $table->tinyInteger('group_admin')->nullable();
             $table->tinyInteger('class_num')->nullable();//1為準備好，不再上傳
             $table->tinyInteger('ready')->nullable();//1為準備好，不再上傳
+            $table->tinyInteger('situation')->nullable();//1為編好班了
             $table->unsignedInteger('township_id')->nullable();            
             $table->timestamps();
         });

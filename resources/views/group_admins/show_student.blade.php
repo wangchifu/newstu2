@@ -151,15 +151,24 @@
                     <span class="text-info">{{ $student->name }}</span>
                     (-{{ $student->subtract }})
                     @if(!empty($student->w_teacher))
-                      <span class="badge bg-primary">+{{ $student->w_teacher->name }}</span>
+                      <small class="text-primary">+指定 {{ $student->w_teacher->name }}</small>
                     @else
                       <small class="text-danger">未指定</small>
                     @endif
                   @else
                     {{ $student->name }}
                   @endif
+                  @if($student->another_no)
+                    <small class="text-secondary">(
+                      @if($student->type==2)
+                        同
+                      @elseif($student->type==3)
+                        不同
+                      @endif
+                      {{ $student->another_no }} )</small>
+                  @endif
                   @if($student->without_teacher)
-                    <span class="badge bg-danger">-{{ $student->wo_teacher->name }}</span>
+                    <small class="text-danger">-不可 {{ $student->wo_teacher->name }}</small>
                   @endif
                 </td>
                 @if($n%5 == 0)

@@ -21,6 +21,11 @@
   .page-break {
             page-break-after: always; /* 在該元素之後強制換頁 */
   }
+  .underline {
+            border-bottom: 1px solid black; /* 調整這裡的值來改變底線的粗細 */
+            display: inline; /* 確保底線僅適用於文本 */
+            padding-bottom: 1px; /* 可選：增加底部間距 */
+        }
 </style>
 <table style="width:100%">
   <tr>
@@ -39,7 +44,8 @@
 <table class="styled-table">
   <tr>
     <td colspan="7">
-      <h4>彰化縣{{ $school->name }} 一年{{ $eng_class[$i] }}班 新生編班名冊</h4>
+      <h4 style="margin-bottom: -10px;">彰化縣{{ $school->name }} 一年{{ $eng_class[$i] }}班 新生編班名冊</h4>
+      <p style="text-align:right;margin:2px;">導師：<span class="underline">　{{ $student_data[$eng_class[$i]]['teacher'] }}　</span></p>
     </td>
   </tr>
   <tr>
@@ -65,7 +71,7 @@
       備註
     </td>
   </tr>
-  @foreach( $student_data[$eng_class[$i]]['st'] as $k=>$v)
+  @foreach($student_data[$eng_class[$i]]['st'] as $k=>$v)
     <tr>
       <td>{{ $v['no'] }}</td>
       <td>{{ $eng_class[$i] }}</td>
