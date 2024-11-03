@@ -931,7 +931,7 @@ class GroupAdminController extends Controller
         $with_students = [];
         $with_teachers = [];        
         for($n=0;$n<$school->class_num;$n++){
-            $check_student =  Student::where('class',$eng_class[$n])->where('with_teacher','<>',null)->first();
+            $check_student =  Student::where('code',$school->code)->where('class',$eng_class[$n])->where('with_teacher','<>',null)->first();
             if(!empty($check_student->id)){
                 $with_students[$eng_class[$n]] = $check_student->name;
                 $with_teachers[$eng_class[$n]] = $check_student->w_teacher->name;
@@ -939,7 +939,7 @@ class GroupAdminController extends Controller
         }
         $without_teachers = [];        
         for($n=0;$n<$school->class_num;$n++){
-            $check_students =  Student::where('class',$eng_class[$n])->where('without_teacher','<>',null)->get();            
+            $check_students =  Student::where('code',$school->code)->where('class',$eng_class[$n])->where('without_teacher','<>',null)->get();            
             if(count($check_students) > 0){                
                 foreach($check_students as $student){
                     if(!isset($without_teachers[$eng_class[$n]])) $without_teachers[$eng_class[$n]] = "";

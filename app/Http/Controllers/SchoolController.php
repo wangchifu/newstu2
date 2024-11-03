@@ -14,7 +14,7 @@ class SchoolController extends Controller
 {
     public function upload_students($semester_year=null){
 
-        $get_student = Student::orderBy('created_at','DESC')->first();
+        $get_student = Student::where('code',auth()->user()->school->code)->orderBy('created_at','DESC')->first();
         if(empty($semester_year) and !empty($get_student)){            
             $semester_year = $get_student->semester_year;
         }
@@ -190,7 +190,7 @@ class SchoolController extends Controller
     }
 
     public function student_type($semester_year=null){
-        $get_student = Student::orderBy('created_at','DESC')->first();
+        $get_student = Student::where('code',auth()->user()->school->code)->orderBy('created_at','DESC')->first();
         if(empty($semester_year) and !empty($get_student)){            
             $semester_year = $get_student->semester_year;
         }

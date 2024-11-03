@@ -25,7 +25,7 @@
 @section('page_title')
 <br>
 <h1>歡迎使用</h1>
-<i class="bi bi-star-fill text-warning"></i> 為編班中心學校
+<i class="bi bi-star-fill text-warning"></i> 為編班中心學校，各分區尚未取得編班權限的學校，請聯絡和東國小王老師。
 @endsection
 
 @section('content')
