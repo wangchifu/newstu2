@@ -6,9 +6,9 @@ use Illuminate\Http\Request;
 use Rap2hpoutre\FastExcel\FastExcel;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use App\Models\School;
 use App\Models\Student;
 use App\Models\Teacher;
-use App\Models\School;
 
 class SchoolController extends Controller
 {
@@ -49,7 +49,7 @@ class SchoolController extends Controller
         return view('schools.upload_students',$data);
     }
 
-    public function import_excel(Request $request){
+    public function import_excel(Request $request){        
         //處理檔案上傳
         if ($request->hasFile('file')) {
             $file = $request->file('file');
@@ -58,6 +58,18 @@ class SchoolController extends Controller
             if(chk_file_format($file->getClientOriginalName())=="NO"){
                 return back()->withErrors(['errors' => ['錯誤：檔案名稱不符合要求！']]);
             }
+
+            //系統內已有的學生身分證
+            $all_students = Student::all();
+            $all_student_array = [];
+            $all_st_name=[];
+            $all_st_code=[];
+            foreach($all_students as $all_student){
+                $all_student_array[$all_student->id] = $all_student->id_number;
+                $all_st_name[$all_student->id_number] = $all_student->name;
+                $all_st_code[$all_student->id_number] = $all_student->code;
+            }
+
             $spreadsheet = IOFactory::load($file);
 
             // 選取活動工作表
@@ -98,37 +110,45 @@ class SchoolController extends Controller
                 }
             }
             if($k > 2){
-                $students++;                
-                $special = ($row[7]==1)?1:null;
-                $subtract = ($special==1)?1:0;
-                if($row[7] != 0 and $row[7] != 1 and $row[7] !=2 and $row[7] !=3){
-                    $type = 0;
-                }else{
-                    $type = $row[7];
-                }
+                if(!empty($row[0])){
+                    $students++;                
+                    $special = ($row[7]==1)?1:null;
+                    $subtract = ($special==1)?1:0;
+                    if($row[7] != 0 and $row[7] != 1 and $row[7] !=2 and $row[7] !=3){
+                        $type = 0;
+                    }else{
+                        $type = $row[7];
+                    }
+    
+                    //檢查身分證
+                    if(!chk_id_number($row[5])){
+                        $error_id_number .= " {$row[0]} {$row[4]}, ";
+                    }
 
-                //檢查身分證
-                if(!chk_id_number($row[5])){
-                    $error_id_number .= " {$row[0]} {$row[4]}, ";
-                }
-
-                $one = [
-                    'code' => auth()->user()->school->code,
-                    'semester_year' => $file_name_array[0],
-                    'no' => $row[0],
-                    'sex' => $row[3],
-                    'name' => $row[4],
-                    'id_number' => $row[5],
-                    'old_school' => $row[6],
-                    'type' => $type,
-                    'special' => $special,
-                    'subtract' => $subtract,
-                    'another_no'=>$row[8],
-                    'ps'=>$row[9],
-                    'created_at' => now(),
-                    'updated_at' => now(),
-                ];
-                array_push($all, $one);
+                    if(in_array($row[5],$all_student_array)){
+                        $check_school = School::where('code',$all_st_code[$row[5]])->first();                        
+                        return back()->withErrors(['errors' => ['錯誤：學生 '.$row[4].' 的身分證 '.$row[5].' 與 '.$check_school->name.' '.$all_st_name[$row[5]]. '一樣，所以中止上傳！']]);
+                    }
+                    
+    
+                    $one = [
+                        'code' => auth()->user()->school->code,
+                        'semester_year' => $file_name_array[0],
+                        'no' => $row[0],
+                        'sex' => $row[3],
+                        'name' => $row[4],
+                        'id_number' => $row[5],
+                        'old_school' => $row[6],
+                        'type' => $type,
+                        'special' => $special,
+                        'subtract' => $subtract,
+                        'another_no'=>$row[8],
+                        'ps'=>$row[9],
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ];
+                    array_push($all, $one);
+                }                
             }
         }
         if($students != $student_num){

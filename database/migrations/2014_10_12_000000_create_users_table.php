@@ -18,16 +18,11 @@ return new class extends Migration
             $table->string('name');
             $table->string('title')->nullable();
             $table->string('username')->unique;
-            $table->string('password');
-            $table->tinyInteger('system_admin')->nullable();
+            $table->string('password');            
             $table->string('login_type');
             $table->foreignId('school_id')->nullable();
-            $table->foreignId('group_id')->nullable();
-            $table->string('email')->nullable();
-            $table->timestamp('email_verified_at')->nullable();
-            $table->rememberToken();
-            $table->foreignId('current_team_id')->nullable();
-            $table->string('profile_photo_path', 2048)->nullable();
+            $table->foreignId('group_id')->nullable();            
+            $table->rememberToken();            
             $table->timestamps();
         });
     }

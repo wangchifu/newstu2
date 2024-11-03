@@ -36,11 +36,25 @@ class GroupAdminController extends Controller
 
     public function start(){
         $group = auth()->user()->school->group;
+        $all_students = Student::all();
+        $i=0;
+        foreach($all_students as $student){
+            $students[$i] = $student->id_number;
+            $i++;
+        }
+        $countValues = array_count_values($students);
+        $duplicates = [];
+        foreach ($countValues as $value => $count) {
+            if ($count > 1) {
+                $duplicates[$value] = $count;
+            }
+        }        
 
         $schools = School::where('group_id',auth()->user()->school->group_id)->get();
         $data = [
             'group'=>$group,
             'schools'=>$schools,
+            'duplicates'=>$duplicates,
         ];
         return view('group_admins.start',$data);
     }
@@ -769,9 +783,7 @@ class GroupAdminController extends Controller
             }
             //都沒了 就停止迴圈
             if(empty($boy) and empty($girl)) break;
-        }
-
-
+        }        
 
         //檢查一下 是否把不可同老師的 分到同一班             
         foreach($students as $student){
@@ -810,7 +822,7 @@ class GroupAdminController extends Controller
         }
 
         //dd('通過！');
-
+        
 
 
         //再打亂一次
@@ -939,7 +951,8 @@ class GroupAdminController extends Controller
                 
     
         //再分指定不可以的老師
-        $without_teacher = [];                
+        $without_teacher = [];      
+        if(!isset($att['without_teacher'])) $att['without_teacher'] = [];
         foreach($att['without_teacher'] as $k=>$v){
             $v = substr($v,0,-1);            
             $without_teacher = explode(",",$v);                

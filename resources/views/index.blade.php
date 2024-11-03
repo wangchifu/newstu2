@@ -4,10 +4,10 @@
 <div id="carouselExampleControls" class="carousel slide" data-bs-ride="carousel">
   <div class="carousel-inner">
     <div class="carousel-item active">
-      <img src="{{ asset('img/slides-1.jpg') }}" class="d-block w-100" alt="...">
+      <img src="{{ asset('img/slides-1.png') }}" class="d-block w-100" alt="...">
     </div>
     <div class="carousel-item">
-      <img src="{{ asset('img/slides-2.jpg') }}" class="d-block w-100" alt="...">
+      <img src="{{ asset('img/slides-2.png') }}" class="d-block w-100" alt="...">
     </div>
   </div>
 
@@ -45,7 +45,7 @@
                     <th scope="col" nowrap>學校代碼</th>
                     <th scope="col" nowrap>學校名稱</th>
                     <th scope="col" nowrap>已編</th>
-                    <th scope="col" nowrap>日期</th>
+                    <th scope="col" nowrap>變更日期</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -67,7 +67,7 @@
                           <i class="bi bi-x-circle text-danger"></i>
                         @endif
                       </td>
-                      <td>2016-05-25</td>
+                      <td>{{ substr($school->updated_at,0,10) }}</td>
                     </tr>
                     <?php $n++; ?>
                   @endforeach                  

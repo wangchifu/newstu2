@@ -38,23 +38,26 @@
               </thead>
               <tbody>
                 <tr>
-                  <td><h3>編班學校名稱</h3></td>
+                  <td nowrap><h3>編班學校名稱</h3></td>
                   <td><h3 class="text-danger">{{ $school->name }}</h3></td>
                 </tr>
                 <tr>
-                  <td><h3>已送出導師名冊</h3></td>
+                  <td nowrap><h3>已送出導師名冊</h3></td>
                   <td>
-                    <table>                      
+                    <table class="table table-hover w-50">                      
                       @for($n=0;$n<$school->class_num;$n++)
-                        <tr>                          
-                          <td style="width:50px;">
+                        <tr>
+                          <td style="width:80px;">
+                            班級：
+                          </td>                          
+                          <td style="width:80px;">
                             <input type="text" name="class_name[{{ $eng_class[$n] }}]" value="{{ $eng_class[$n] }}" class="form-control" readonly="readonly" style="color:red">
                           </td>
-                          <td style="width:50px;">
-                            導師
+                          <td style="width:80px;">
+                            導師：
                           </td>
                           <td>
-                            <select class="form-control select-option" name="teacher[{{ $eng_class[$n] }}]">                              
+                            <select class="form-control select-option" name="teacher[{{ $eng_class[$n] }}]" style="width:100px;">                              
                               @if(isset($with_teachers[$eng_class[$n]]))
                                 @foreach($teachers as $teacher)           
                                   @if($with_teachers[$eng_class[$n]] == $teacher->name)                                                         
@@ -85,7 +88,7 @@
                   </td>
                 </tr>
                 <tr>
-                  <td><h3>亂數種子(4碼)</h3></td>
+                  <td nowrap><h3>亂數種子(4碼)</h3></td>
                   <td><input type="text" name="random_seed" class="form-control" value="{{ rand(1000,9999) }}" id="random_seed" style="color:red;font-size:30px;" maxlength="4" required></td>
                 </tr>
               </tbody>            

@@ -38,7 +38,7 @@
               </thead>
               <tbody>
                 <tr>
-                  <td style="width:300px;">
+                  <td style="width:300px;" nowrap>
                     <h3>編班學校名稱</h3>
                   </td>
                   <td>
@@ -46,14 +46,14 @@
                   </td>
                 </tr>
                 <tr>
-                  <td>
+                  <td nowrap>
                     <h3>已送出導師名冊</h3>
                   </td>
                   <td>
-                    <table class="table table-bordered table-hover">
+                    <table class="table table-bordered table-hover w-50">
                       <thead class="table-primary">
                         <tr>
-                          <th>
+                          <th style="width:50%">
                             原本
                           </th>
                           <th>

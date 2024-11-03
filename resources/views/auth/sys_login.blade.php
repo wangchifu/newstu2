@@ -22,7 +22,7 @@
               <p class="text-center small">請輸入管理員帳號密碼</p>
             </div>
 
-            <form class="row g-3 needs-validation" novalidate method="post" action="{{ route('auth') }}">
+            <form class="row g-3 needs-validation" novalidate method="post" action="{{ route('sys_auth') }}">
               @csrf
               <div class="col-12">
                 <label for="yourUsername" class="form-label">帳號</label>

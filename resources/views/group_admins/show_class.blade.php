@@ -7,6 +7,11 @@
 @section('content')
 
 <section class="section">  
+  @for($i=0;$i<$school->class_num;$i++)
+    @if($student_data[$eng_class[$i]]['boy']+$student_data[$eng_class[$i]]['girl']>28)
+      <body onload="sw_alert('人數過多問題','本縣國小每班最高人數為28人，國中每班最高人數為29人，此校有班級超過此規定！','warning');">
+    @endif
+  @endfor  
   <div class="row">
     <div class="card">
       <div class="card-body">

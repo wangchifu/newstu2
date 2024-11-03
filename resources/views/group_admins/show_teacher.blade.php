@@ -18,11 +18,13 @@
               </th>
             </tr>
           </thead>
+        </table>
+      <table class="table table-striped w-25 mx-auto">         
           <tbody>
             @foreach($class_teachers as $class => $students)
               <tr>
                 <td>
-                  {{ $class}}
+                  {{ $class}}班
                 </td>
                 <td>
                 <?php $student = $students->first(); ?>                  

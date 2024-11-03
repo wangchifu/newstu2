@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Session;
 use App\Models\User;
 use App\Models\School;
 use App\Models\Group;
@@ -17,6 +19,16 @@ class HomeController extends Controller
             'groups'=>$groups,
         ];
         return view('index',$data);
+    }
+
+    public function about(){
+
+        return view('about');
+    }
+
+    public function teach(){
+
+        return view('teach');
     }
 
     public function pic()
@@ -48,8 +60,54 @@ class HomeController extends Controller
         imagedestroy($im);
     }
 
-    public function login(){
-        return view('auth.login');
+    public function sys_login(){
+        return view('auth.sys_login');
+    }
+
+    public function sys_auth(Request $request){
+        if ($request->input('chaptcha') != session('chaptcha')) {
+            return back()->withInput()->withErrors(['error' => '驗證碼錯誤']);
+        }
+
+        if ($request->input('username') <> env('ADMIN_ACC')) {
+            return redirect()->back();
+        }
+
+        $password = $request->input('password');
+        if (Hash::check($password, env('ADMIN_PWD'))) {
+            session(['system_admin' => true]);
+            return redirect()->route('sys_user');
+        } else {
+            return redirect()->back();
+        }
+    }
+
+    public function sys_logout()
+    {
+        session(['system_admin' => null]);
+        return redirect()->route('index');
+    }
+
+    public function sys_user()
+    {
+        if (session('system_admin') <> true) {
+            return redirect()->back();
+        }
+        $users = User::all();
+        $data = [
+            'users' => $users,
+        ];
+        return view('sys_user', $data);
+    }
+
+    public function impersonate(User $user)
+    {
+        if (session('system_admin') <> true) {
+            return redirect()->back();
+        }
+        Auth::login($user);
+                
+        return redirect()->route('index');
     }
 
     public function glogin(){

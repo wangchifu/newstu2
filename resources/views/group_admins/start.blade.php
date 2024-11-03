@@ -7,6 +7,17 @@
 @section('content')
 
 <section class="section">
+  @if(!empty($duplicates))
+    <body onload="sw_alert('重複身分證','系統中有學生身分證相同','error')">
+  @endif
+  <style>
+    .red-border-table, .red-border-table td {
+        border: 2px solid red;
+    }
+    .red-border-table {
+        border-collapse: collapse;
+    }
+  </style>
   <div class="card">
     <div class="card-body">
       <h5 class="card-title">「{{ $group->name }}」學校列表</h5>   
@@ -24,6 +35,20 @@
         $checked = "";
       }
       ?>
+      @foreach($duplicates as $k=>$v)
+        <?php
+          $students = \App\Models\Student::where('id_number',$k)->get();
+        ?>
+        <span class="text-danger">重複身分證的學生</span>
+        <table class="red-border-table">
+        @foreach($students as $student)   
+          <?php $school = \App\Models\School::where('code',$student->code)->first(); ?>
+          <tr>
+            <td>{{ $school->name }}</td><td>{{ $student->code }}</td><td>{{ $student->id_number }}</td><td>{{ $student->name }}</td>
+          </tr>        
+        @endforeach
+        </table>
+      @endforeach
       <input type="checkbox" id="toggleCheckbox" onclick="toggleCellVisibility()" {{ $checked }}> 
       <label for="toggleCheckbox">正式編班請打勾</label>
       @if(isset($_COOKIE["real".$group->id]))
