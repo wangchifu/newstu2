@@ -59,7 +59,9 @@ class SchoolController extends Controller
                 return back()->withErrors(['errors' => ['錯誤：檔案名稱不符合要求！']]);
             }
 
-            //系統內已有的學生身分證
+            //先清空        
+            Student::where('code',auth()->user()->school->code)->delete();
+            //系統內已有的學生身分證            
             $all_students = Student::all();
             $all_student_array = [];
             $all_st_name=[];
@@ -160,10 +162,7 @@ class SchoolController extends Controller
 
         if(count($teacher_array) != $class_num){
             return back()->withErrors(['errors' => ['錯誤：班級數('.$class_num.')與老師數('.count($teacher_array).')不合！？']]);
-        }
-        //先清空
-        //Student::where('semester_year',$file_name_array[0])->where('code',auth()->user()->school->code)->delete();
-        Student::where('code',auth()->user()->school->code)->delete();
+        }        
         Student::insert($all);
 
         //填上班級數(有些學校不會送老師)

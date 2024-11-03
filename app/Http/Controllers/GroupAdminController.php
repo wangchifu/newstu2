@@ -9,6 +9,7 @@ use App\Models\Student;
 use App\Models\Teacher;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use Illuminate\Support\Facades\DB;
 
 class GroupAdminController extends Controller
 {
@@ -38,6 +39,7 @@ class GroupAdminController extends Controller
         $group = auth()->user()->school->group;
         $all_students = Student::all();
         $i=0;
+        $students = [];
         foreach($all_students as $student){
             $students[$i] = $student->id_number;
             $i++;
@@ -849,8 +851,47 @@ class GroupAdminController extends Controller
         }
 
         //dd($new_class);
-
+        //寫入資料庫
         $eng_class = [0=>'A1',1=>'A2',2=>'A3',3=>'A4',4=>'A5',5=>'A6',6=>'A7',7=>'A8',8=>'A9',9=>'A10',10=>'A11',11=>'A12',12=>'A13',13=>'A14',14=>'A15',15=>'A16',16=>'A17',17=>'A18',18=>'A19',19=>'A20',20=>'A21',21=>'A22',22=>'A23',23=>'A24',24=>'A25',25=>'A26'];
+        
+        
+        //批量寫法
+        $ids = "";
+        $string1 = "";
+        $string2 = "";
+        foreach($students as $student){                
+            foreach($new_class as $k=>$v){
+                $n=1;        
+                foreach($v['boy'] as $k1=>$v1){
+                    if($student->no==$k1){
+                        $att['class'] = $eng_class[$k];
+                        $att['num'] = $n;
+                    }
+                    $n++;
+                }
+                foreach($v['girl'] as $k1=>$v1){
+                    if($student->no==$k1){
+                        $att['class'] = $eng_class[$k];
+                        $att['num'] = $n;
+                    }
+                    $n++;
+                }                  
+            }
+            $ids = $ids.$student->id.",";
+            $string1 = $string1." when id=".$student->id." then '".$att['class']."'";
+            $string2 = $string2." when id=".$student->id." then '".$att['num']."'";
+        }
+        $ids = substr($ids,0,-1);
+        //dd($ids);
+        DB::statement("UPDATE students SET 
+        class = CASE 
+        ".$string1." 
+        END,
+        num = CASE 
+        ".$string2."
+        END
+        WHERE id IN (".$ids.")");        
+        /**迴圈寫法 效果差
         foreach($students as $student){                
             foreach($new_class as $k=>$v){
                 $n=1;        
@@ -871,6 +912,7 @@ class GroupAdminController extends Controller
             }
             $student->update($att);
         }
+        */
 
         $att2['situation'] = 1;
         $school->update($att2);
@@ -975,15 +1017,27 @@ class GroupAdminController extends Controller
         }        
 
         $students = Student::where('code',$school->code)->get();
+        $ids = "";
+        $string1 = "";
         foreach($students as $student){
             foreach($class_teacher as $k=>$v){
                 if($student->class == $k){
                     $att2['teacher_id'] = $v;
-                    $student->update($att2);
+                    $ids = $ids.$student->id.",";
+                    $string1 = $string1." when id=".$student->id." then '".$att2['teacher_id']."'";                    
+                    //$student->update($att2);
                 }
             }
             
         }
+
+        $ids = substr($ids,0,-1);
+        //dd($ids);
+        DB::statement("UPDATE students SET 
+        teacher_id = CASE 
+        ".$string1." 
+        END
+        WHERE id IN (".$ids.")");  
         
         return redirect()->route('start');
 
@@ -1027,14 +1081,26 @@ class GroupAdminController extends Controller
             $students[$eng_class[$i]] = Student::where('code',$school->code)->where('class',$eng_class[$i])->get();
         }
         $att['teacher'] = $request->input('teacher');
+        
+        $ids = "";
+        $string1 = "";
         foreach($att['teacher'] as $k=>$v){
             if($k <> $v){
                 $att2['class'] = $v;
                 foreach($students[$k] as $student){
-                    $student->update($att2);
+                    $ids = $ids.$student->id.",";
+                    $string1 = $string1." when id=".$student->id." then '".$att2['class']."'";                    
+                    //$student->update($att2);
                 }                
             }            
         }
+        $ids = substr($ids,0,-1);
+        //dd($ids);
+        DB::statement("UPDATE students SET 
+        class = CASE 
+        ".$string1." 
+        END
+        WHERE id IN (".$ids.")");  
 
         return redirect()->route('start');
     }
