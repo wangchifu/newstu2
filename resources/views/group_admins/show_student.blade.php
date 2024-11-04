@@ -113,7 +113,7 @@
               </td>
               <td colspan="5">
                 @foreach($teachers as $teacher)
-                  {{ $teacher->name }} 
+                  {{ $teacher->name }} ,
                 @endforeach
               </td>
             </tr>

@@ -117,11 +117,13 @@
                 <a href="#!" onclick="sw_confirm1('確定該校改為「未確定」？','{{ route('group_admin_unlock',$school->id) }}')">
                   <i class="bi bi-check-circle text-success"></i>
                 </a>
+                <br>
+                <small class="toggle-cell" style="display: {{ $display }}">{{ $school->ready_user->school->name }}<br>{{ $school->ready_user->name }}</small>
                 @else
                   @if(!empty($student))
                     <a href="#!" onclick="sw_confirm1('確定該校不再更改？','{{ route('group_admin_unlock',$school->id) }}')">
                       <i class="bi bi-dash-circle text-dark"></i>
-                    </a>
+                    </a>                    
                   @else
                   <i class="bi bi-x-circle text-danger"></i>
                   @endif

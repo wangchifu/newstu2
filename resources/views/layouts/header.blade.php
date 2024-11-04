@@ -48,11 +48,16 @@
             <li>
               <hr class="dropdown-divider">
             </li>
-
             <li>
               <a class="dropdown-item d-flex align-items-center" href="{{ route('student_type') }}">
                 <i class="bi bi-gear"></i>
                 <span>設定學生</span>
+              </a>
+            </li>
+            <li>
+              <a class="dropdown-item d-flex align-items-center" href="{{ route('school_log') }}">
+                <i class="bi bi-eye"></i>
+                <span>操作記錄</span>
               </a>
             </li>
             <li>

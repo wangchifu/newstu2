@@ -7,6 +7,7 @@ use App\Models\Group;
 use App\Models\School;
 use App\Models\Student;
 use App\Models\Teacher;
+use App\Models\Log;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use Illuminate\Support\Facades\DB;
@@ -66,7 +67,17 @@ class GroupAdminController extends Controller
             return back();    
         }        
         $att['ready'] = ($school->ready==1)?null:1;
+        $att['ready_user_id'] = ($school->ready==1)?null:auth()->user()->id;
         $school->update($att);
+        
+        //記錄
+        if($att['ready']==1){
+            $event = "是管理者，他替 ".$school->name." 送出了名單，不再更改。";
+        }else{
+            $event = "是管理者，他取消 ".$school->name." 送出的名單。";
+        }        
+        logging($event,$school->code,get_ip());        
+
         return back();
     }
 
@@ -180,26 +191,53 @@ class GroupAdminController extends Controller
 
     function delete_all(Group $group){
         $schools = School::where('group_id',$group->id)->get();
+
+        $event = "是管理者，他為 ".$group->name." 刪除了所有的資料。";     
+        $ip = get_ip();             
+        $one = [];
+        $all = [];
         foreach($schools as $school){
             $att['class_num'] = null;
             $att['situation'] = null;
             $att['ready'] = null;
+            $att['ready_user_id'] = null;
+            $att['situation'] = null;
             $school->update($att);
 
-            Student::where('code',$school->code)->delete();
-            Teacher::where('code',$school->code)->delete();
-        }
+            $check_student = Student::where('code',$school->code)->delete();
+            Teacher::where('code',$school->code)->delete();     
+            if($check_student){
+                $one= [
+                    'message'=>auth()->user()->school->name." ".auth()->user()->name."(".auth()->user()->id.") ".$event,
+                    'user_id'=>auth()->user()->id,
+                    'ip'=>$ip,
+                    'for_code'=>$school->code,
+                    'group_id'=>$school->group_id,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ];       
+                array_push($all, $one);
+            }
             
+        }
+                   
+        Log::insert($all);
+        
         return redirect()->route('start');
     }
 
     function delete123(School $school){
         $att['class_num'] = null;
         $att['ready'] = null;
+        $att['ready_user_id'] = null;
         $att['situation'] = null;
         $school->update($att);
         Student::where('code',$school->code)->delete();
         Teacher::where('code',$school->code)->delete();
+
+        $event = "是管理者，他為 ".$school->name." 刪除了學生名冊。";                
+        logging($event,$school->code,get_ip());  
+
         return redirect()->route('start');
     }
 
@@ -212,12 +250,17 @@ class GroupAdminController extends Controller
         $att2['situation'] = null;
         $school->update($att2);
 
+        $event = "是管理者，他為 ".$school->name." 刪除了學生編班。";                
+        logging($event,$school->code,get_ip());  
         return redirect()->route('start');
     }
 
     function delete3(School $school){
         $att['teacher_id'] = null;        
         Student::where('code',$school->code)->update($att);
+
+        $event = "是管理者，他為 ".$school->name." 刪除了導師。";                
+        logging($event,$school->code,get_ip());  
         return redirect()->route('start');
     }
 
@@ -916,6 +959,9 @@ class GroupAdminController extends Controller
 
         $att2['situation'] = 1;
         $school->update($att2);
+        
+        $event = "是管理者，他為 ".$school->name." 編了學生的班級。";                
+        logging($event,$school->code,get_ip());     
 
         return redirect()->route('start');
         
@@ -1039,6 +1085,9 @@ class GroupAdminController extends Controller
         END
         WHERE id IN (".$ids.")");  
         
+        $event = "是管理者，他為 ".$school->name." 編了班級的導師。";                
+        logging($event,$school->code,get_ip());  
+
         return redirect()->route('start');
 
     }
@@ -1102,6 +1151,9 @@ class GroupAdminController extends Controller
         END
         WHERE id IN (".$ids.")");  
 
+        $event = "是管理者，他為 ".$school->name." 重新排了班級順序。";                
+        logging($event,$school->code,get_ip());  
+
         return redirect()->route('start');
     }
 
@@ -1139,6 +1191,9 @@ class GroupAdminController extends Controller
             */
         }
         //dd($student_data);
+        $event = "是管理者，他列印了 ".$school->name." 班級學生編班資料。";                
+        logging($event,$school->code,get_ip());
+
         $data = [
             'school'=>$school,
             'students'=>$students,
@@ -1225,7 +1280,18 @@ class GroupAdminController extends Controller
         $writer = new Xlsx($spreadsheet);
         $writer->save('php://output'); // 將文件輸出到瀏覽器
 
+        $event = "是管理者，他下載了 ".$school->name." 班級學生編班資料。";                
+        logging($event,$school->code,get_ip());
+
         exit;
+    }
+
+    function group_log(){
+        $logs  = Log::where('group_id',auth()->user()->group_id)->orderBy('created_at','DESC')->paginate(20);
+        $data = [
+            'logs'=>$logs,
+        ];
+        return view('group_admins.group_log',$data);
     }
 
 }

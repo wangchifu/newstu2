@@ -16,9 +16,9 @@
 
           <div>
             <h6>一、版權申明</h6>
-            <p>本系統版權為本人( ET Wang )所有，但可無償提供彰化縣各編班中心使用，我沒有受縣府妥託此業務，也不負編班結果之責任，請了解本程式規則，詳加測試後，自行決定採用與否。</p>
+            <p>本系統<span class="text-danger">版權為本人( ET Wang )所有</span>，但可無償提供彰化縣各編班中心使用，我<span class="text-primary">沒有受縣府妥託此業務，也不負編班結果之責任，請了解本程式規則，詳加測試後，自行決定採用與否</span>。</p>
           </div>
-
+          <hr>
           <div class="pt-2">
             <h6>二、程式功能</h6>
             <ol>
@@ -26,7 +26,7 @@
                 本程式盡量平均分配「總人數」、「男女生人數」及「所標註的特殊生」到各班，先編班，再編導師。
               </li>
               <li>
-                特殊生(1)、雙胞胎同班(2)、雙胞胎不同班(3)等情況，請於 cloudschool 上標註後，方才匯出 xlsx 檔。
+                特殊生(1)、雙胞胎同班(2)、雙胞胎不同班(3)等情況，請於 <a href="https://cloudschool.chc.edu.tw" target="_blank">cloudschool 校務系統</a> 上標註後，方才匯出 xlsx 檔。
               </li>
               <li>
                 所匯入的 xlsx 檔，請由 cloudschool 系統產出，並注意名單及人數是否為正確。
@@ -47,8 +47,9 @@
                 本系統可以子女避開父母為導師。
               </li>
             </ol>
-          </div>
-
+            <img src="{{ asset('cloudschool.png') }}" width="80%">
+          </div>          
+          <hr>
           <div class="pt-2">
             <h6>三、程式沿革</h6>
             <ol>

@@ -14,12 +14,12 @@
             </li>
             <li>
               <a href="{{ route('assign_group_admin') }}">
-                <i class="bi bi-circle"></i><span>指定下個學校</span>
+                <i class="bi bi-circle"></i><span>指定下所學校</span>
               </a>
             </li>
             <li>
-              <a href="">
-                <i class="bi bi-circle"></i><span>log 記錄</span>
+              <a href="{{ route('group_log') }}">
+                <i class="bi bi-circle"></i><span>重要操作記錄</span>
               </a>
             </li>
           </ul>
@@ -33,7 +33,7 @@
         <ul id="tables-nav2" class="nav-content collapse " data-bs-parent="#sidebar-nav">
           <li>
             <a href="https://newstu.chc.edu.tw/chc_center_classv3" target="_blank">
-              <i class="bi bi-circle"></i><span>舊版編班系統</span>
+              <i class="bi bi-circle"></i><span>舊版編班系統的連結</span>
             </a>
           </li>
           <li>
@@ -43,12 +43,12 @@
           </li>
           <li>
             <a href="https://newstu.chc.edu.tw/cloudschool_newstu.pdf" target="_blank">
-              <i class="bi bi-circle"></i><span>校務系統手冊</span>
+              <i class="bi bi-circle"></i><span>校務系統的新生手冊</span>
             </a>
           </li>
           <li>
             <a href="{{ route('teach') }}">
-              <i class="bi bi-circle"></i><span>系統教學</span>
+              <i class="bi bi-circle"></i><span>系統使用教學之影片</span>
             </a>
           </li>
         </ul>

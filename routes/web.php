@@ -53,6 +53,7 @@ Route::get('student_type/{semester_year?}', [SchoolController::class, 'student_t
 Route::get('edit_student/{student}', [SchoolController::class, 'edit_student'])->name('edit_student');
 Route::post('update_student/{student}', [SchoolController::class, 'update_student'])->name('update_student');
 Route::post('school_ready', [SchoolController::class, 'school_ready'])->name('school_ready');
+Route::get('school_log', [SchoolController::class, 'school_log'])->name('school_log');
 });
 
 Route::group(['middleware' => 'group_admin'], function () {
@@ -75,4 +76,5 @@ Route::group(['middleware' => 'group_admin'], function () {
     Route::post('go_form_order/{school}', [GroupAdminController::class, 'go_form_order'])->name('go_form_order');
     Route::get('print/{school}', [GroupAdminController::class, 'print'])->name('print');
     Route::get('export/{school}', [GroupAdminController::class, 'export'])->name('export');
+    Route::get('group_log', [GroupAdminController::class, 'group_log'])->name('group_log');
 });

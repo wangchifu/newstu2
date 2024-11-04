@@ -9,6 +9,7 @@ use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use App\Models\School;
 use App\Models\Student;
 use App\Models\Teacher;
+use App\Models\Log;
 
 class SchoolController extends Controller
 {
@@ -185,7 +186,9 @@ class SchoolController extends Controller
         //先清空
         Teacher::where('code',auth()->user()->school->code)->delete();
         Teacher::insert($all_teacher);
-
+        //記錄
+        $event = "上傳了學生及導師名單。";
+        logging($event,auth()->user()->school->code,get_ip());
         return redirect()->route('upload_students');
     }
 
@@ -370,6 +373,10 @@ class SchoolController extends Controller
         }
         
         $student->update($att);
+
+        //記錄
+        $event = "修改了學生 ".$student->name." 的個人資料設定。";
+        logging($event,auth()->user()->school->code,get_ip());
         return redirect()->route('student_type');
     }
 
@@ -385,8 +392,23 @@ class SchoolController extends Controller
             }
         }
         $att['ready'] = 1;
+        $att['ready_user_id'] = auth()->user()->id;
         School::where('code',auth()->user()->school->code)->update($att);
+
+        //記錄
+        $event = "確定了學校送出名單，不再更改。";
+        logging($event,auth()->user()->school->code,get_ip());
+        return redirect()->route('student_type');
+
         return back();
+    }
+
+    function school_log(){
+        $logs  = Log::where('for_code',auth()->user()->school->code)->orderBy('created_at','DESC')->paginate(20);
+        $data = [
+            'logs'=>$logs,
+        ];
+        return view('schools.school_log',$data);
     }
 
 }
