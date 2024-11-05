@@ -66,11 +66,11 @@ class HomeController extends Controller
 
     public function sys_auth(Request $request){
         if ($request->input('chaptcha') != session('chaptcha')) {
-            return back()->withInput()->withErrors(['error' => '驗證碼錯誤']);
+            return back()->withErrors(['error' => '驗證碼錯誤']);
         }
 
         if ($request->input('username') <> env('ADMIN_ACC')) {
-            return redirect()->back();
+            return back()->withErrors(['error' => '無此帳號']);
         }
 
         $password = $request->input('password');
@@ -78,7 +78,7 @@ class HomeController extends Controller
             session(['system_admin' => true]);
             return redirect()->route('sys_user');
         } else {
-            return redirect()->back();
+            return back()->withErrors(['error' => '密碼錯誤']);
         }
     }
 
