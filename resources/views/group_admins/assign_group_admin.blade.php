@@ -42,7 +42,7 @@
                   <form action="{{ route('do_assign') }}" method="post" id="do_assign{{ $school->id }}">
                     @csrf
                     <input type="hidden" name="school_id" value="{{ $school->id }}">
-                    <a href="#" class="btn btn-warning" onclick="sw_confirm2('指定後，自己將喪失管理權！','do_assign{{ $school->id }}')"><i class="bi bi-arrow-return-right"></i> 指定</a>
+                    <a href="#!" class="btn btn-warning" onclick="sw_confirm2('指定後，自己將喪失管理權！','do_assign{{ $school->id }}')"><i class="bi bi-arrow-return-right"></i> 指定</a>
                   </form>
                 @endif
               </td>
