@@ -273,7 +273,7 @@ class GroupAdminController extends Controller
         };
         $students = Student::where('code',$school->code)->get();
         if(count($students) < 29){
-            return back()->withErrors(['errors' => ['錯誤：學生數須大於28人才能編班！']]);
+            return back()->withErrors(['errors' => ['錯誤：學生數須大於28人才需編班！']]);
         }
 
          //有問題時，重新編一次

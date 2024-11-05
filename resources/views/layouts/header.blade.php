@@ -42,32 +42,24 @@
             <li>
               <a class="dropdown-item d-flex align-items-center" href="{{ route('upload_students') }}">
                 <i class="bi bi-person"></i>
-                <span>上傳名冊</span>
+                <span>1.上傳名冊</span>
               </a>
-            </li>
-            <li>
-              <hr class="dropdown-divider">
             </li>
             <li>
               <a class="dropdown-item d-flex align-items-center" href="{{ route('student_type') }}">
                 <i class="bi bi-gear"></i>
-                <span>設定學生</span>
+                <span>2.設定學生</span>
               </a>
+            </li>
+            <li>
+              <hr class="dropdown-divider">
             </li>
             <li>
               <a class="dropdown-item d-flex align-items-center" href="{{ route('school_log') }}">
                 <i class="bi bi-eye"></i>
                 <span>操作記錄</span>
               </a>
-            </li>
-            <li>
-              <hr class="dropdown-divider">
-            </li>
-            
-            <li>
-              <hr class="dropdown-divider">
-            </li>
-
+            </li>          
             <li>
               <a class="dropdown-item d-flex align-items-center" href="#" onclick="sw_confirm2('確定登出嗎？','logout_form')">
                 <i class="bi bi-box-arrow-right"></i>
