@@ -75,6 +75,7 @@ Route::group(['middleware' => 'group_admin'], function () {
     Route::get('form_order/{school}', [GroupAdminController::class, 'form_order'])->name('form_order');
     Route::post('go_form_order/{school}', [GroupAdminController::class, 'go_form_order'])->name('go_form_order');
     Route::get('print/{school}', [GroupAdminController::class, 'print'])->name('print');
+    Route::get('print2/{school}', [GroupAdminController::class, 'print2'])->name('print2');
     Route::get('export/{school}', [GroupAdminController::class, 'export'])->name('export');
     Route::get('group_log', [GroupAdminController::class, 'group_log'])->name('group_log');
 });

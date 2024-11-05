@@ -1204,6 +1204,53 @@ class GroupAdminController extends Controller
         return view('group_admins.print',$data);
     }
 
+    public function print2(School $school){
+        if($school->group_id != auth()->user()->group_id){
+            return back();    
+        }
+        $students = Student::where('code',$school->code)
+            ->orderBy('class')->orderBy('num')->get();
+                
+        $student = Student::where('code',$school->code)->orderBy('class')->orderBy('num')->first();
+        $semester_year = $student->semester_year;
+        $eng_class = [0=>'A1',1=>'A2',2=>'A3',3=>'A4',4=>'A5',5=>'A6',6=>'A7',7=>'A8',8=>'A9',9=>'A10',10=>'A11',11=>'A12',12=>'A13',13=>'A14',14=>'A15',15=>'A16',16=>'A17',17=>'A18',18=>'A19',19=>'A20',20=>'A21',21=>'A22',22=>'A23',23=>'A24',24=>'A25',25=>'A26'];
+        
+        foreach($students as $student){            
+            $student_data[$student->class]['st'][$student->num]['no'] = $student->no;            
+            //$student_data[$student->class]['st'][$student->num]['special'] = $student->special;
+            $student_data[$student->class]['st'][$student->num]['name'] = substr_cut_name($student->name);
+            $student_data[$student->class]['st'][$student->num]['sex'] = $student->sex;
+            
+            if(!empty($student->teacher)){
+                $student_data[$student->class]['teacher'] = $student->teacher->name;
+            }else{
+                $student_data[$student->class]['teacher'] = null;
+            }                
+            /**
+            if(!isset($student_data[$student->class]['all'])) $student_data[$student->class]['all'] = 0;
+            if(!isset($student_data[$student->class]['boy'])) $student_data[$student->class]['boy'] = 0;
+            if(!isset($student_data[$student->class]['girl'])) $student_data[$student->class]['girl'] = 0;
+            if(!isset($student_data[$student->class]['subtract'])) $student_data[$student->class]['subtract'] = 0;
+            $student_data[$student->class]['all']++;
+            if($student->sex == 1) $student_data[$student->class]['boy']++;
+            if($student->sex == 2) $student_data[$student->class]['girl']++;
+            $student_data[$student->class]['subtract'] = $student_data[$student->class]['subtract']+$student->subtract;            
+            */
+        }
+        //dd($student_data);
+        $event = "是管理者，他列印了 ".$school->name." 班級學生編班資料。";                
+        logging($event,$school->code,get_ip());
+
+        $data = [
+            'school'=>$school,
+            'students'=>$students,
+            'semester_year'=>$semester_year,
+            'eng_class'=>$eng_class,
+            'student_data'=>$student_data,
+        ];
+        return view('group_admins.print',$data);
+    }
+
     public function export(School $school){
         if($school->group_id != auth()->user()->group_id){
             return back();    

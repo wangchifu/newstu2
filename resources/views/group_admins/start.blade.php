@@ -172,6 +172,7 @@
                 @if(!empty($student->class))
                 <a href="{{ route('export',$school->id) }}" class="btn btn-secondary" target="_blank"><i class="bi bi-cloud-arrow-down-fill"></i> 下載</a>
                 <a href="{{ route('print',$school->id) }}" class="btn btn-success" target="_blank"><i class="bi bi-printer-fill"></i> 列印</a>
+                <a href="{{ route('print2',$school->id) }}" class="btn btn-info" target="_blank"><i class="bi bi-printer-fill"></i> 列印(藏)</a>
                 @endif
               </td>
               <td class="toggle-cell" style="display: {{ $display }}">
@@ -230,6 +231,7 @@
         }
         //cell.style.display = checkbox.checked ? "none" : ""; // 隱藏或顯示單元格        
     });
+    location.reload();
   }
 
   function setCookie(name, value, days) {

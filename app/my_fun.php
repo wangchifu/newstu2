@@ -133,3 +133,18 @@ function logging($event,$for_code, $ip)
     \App\Models\Log::create($att);
     return true;    
 }
+
+function substr_cut_name($user_name){
+	//获取字符串长度
+	$strlen = mb_strlen($user_name, 'utf-8');
+	//如果字符创长度小于2，不做任何处理
+	if($strlen<2){
+		return $user_name;
+	}else{
+		//mb_substr — 获取字符串的部分
+		$firstStr = mb_substr($user_name, 0, 1, 'utf-8');
+		$lastStr = mb_substr($user_name, -1, 1, 'utf-8');
+		//str_repeat — 重复一个字符串
+		return $strlen == 2 ? $firstStr . str_repeat('〇', mb_strlen($user_name, 'utf-8') - 1) : $firstStr . str_repeat("〇", $strlen - 2) . $lastStr;
+	}
+}
