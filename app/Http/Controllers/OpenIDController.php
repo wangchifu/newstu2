@@ -6,8 +6,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 // RP申請獲得
-define('CLIENT_ID', '49ccd6d951f24ef2494dd3063da89e33');
-define('CLIENT_SECRET', 'a1753d0f212fa9b92b8b5b2c9309ac157e1ef8e1747ac9ef91d9dd3fd0bbae9e');
+define('CLIENT_ID', env('CLIENT_ID'));
+define('CLIENT_SECRET', env('CLIENT_SECRET'));
 //
 define('AUTH_SECRET', '');
 //define('REDIR_URI0', 'http://openid.zipko.info/callback.php');
