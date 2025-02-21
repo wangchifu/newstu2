@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\SchoolController;
 use App\Http\Controllers\GroupAdminController;
+use App\Http\Controllers\OpenIDController;
 
 /*
 |--------------------------------------------------------------------------
