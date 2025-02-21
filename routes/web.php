@@ -23,6 +23,12 @@ Route::get('pic', [HomeController::class, 'pic'])->name('pic');
 //gsuite登入
 Route::get('glogin', [HomeController::class, 'glogin'])->name('glogin');
 Route::post('gauth', [HomeController::class, 'gauth'])->name('gauth');
+
+//openid登入
+//Route::get('openid_get', 'OpenIdLoginController@openid_get')->name('openid_get');
+Route::get('sso', 'OpenIDController@sso')->name('sso');
+Route::get('auth/callback', 'OpenIDController@callback')->name('callback');
+
 Route::get('impersonate/{user}', [HomeController::class, 'impersonate'])->name('impersonate');
 
 //本機登入
