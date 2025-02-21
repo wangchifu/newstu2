@@ -27,8 +27,8 @@ Route::post('gauth', [HomeController::class, 'gauth'])->name('gauth');
 
 //openid登入
 //Route::get('openid_get', 'OpenIdLoginController@openid_get')->name('openid_get');
-Route::get('sso', 'OpenIDController@sso')->name('sso');
-Route::get('auth/callback', 'OpenIDController@callback')->name('callback');
+Route::get('sso', [OpenIDController::class,'sso'])->name('sso');
+Route::get('auth/callback', [OpenIDController::class,'callback'])->name('callback');
 
 Route::get('impersonate/{user}', [HomeController::class, 'impersonate'])->name('impersonate');
 
