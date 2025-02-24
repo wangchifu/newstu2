@@ -103,11 +103,11 @@ class OpenIDController extends Controller
 
 
       // 把access token記到session中
-      print_r($userinfo);
-      echo "<hr>";
-      print_r($profile);      
-      echo "<hr>";
-      print_r($edufile);      
+      //print_r($userinfo);
+      //echo "<hr>";
+      //print_r($profile);      
+      //echo "<hr>";
+      //print_r($edufile);      
       //die();
 
       $user_obj['username'] = $userinfo['sub'];
