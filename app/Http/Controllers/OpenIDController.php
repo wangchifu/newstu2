@@ -139,6 +139,7 @@ class OpenIDController extends Controller
                 }
                 $att['name'] = $user_obj['name'];
                 $att['title'] = $user_obj['title']; 
+                $att['personid'] = $user_obj['personid'];
                 $att['username'] = $user_obj['username'];
                 $att['password'] = $user_obj['password'];
                 $att['login_type'] = "openID"; 
