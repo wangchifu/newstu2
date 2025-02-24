@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
+use App\Models\School;
 
 // RP申請獲得
 define('CLIENT_ID', env('CLIENT_ID'));
