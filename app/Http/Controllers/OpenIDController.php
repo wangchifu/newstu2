@@ -102,11 +102,68 @@ class OpenIDController extends Controller
 
 
       // 把access token記到session中
-      print_r($userinfo);
-      echo "<hr>";
-      print_r($profile);      
-      echo "<hr>";
-      print_r($edufile);      
+      //print_r($userinfo);
+      //echo "<hr>";
+      //print_r($profile);      
+      //echo "<hr>";
+      //print_r($edufile);      
+      //die();
+      $obj['success'] = 1;
+      $obj['name'] = $userinfo['name'];
+      $obj['code'] = $edufile['schoolid'];
+      $obj['kind'] = $edufile['titles'][0]['titles'][0];
+      $obj['title'] = $edufile['titles'][0]['titles'][1];
+      dd($obj);
+
+      //學生禁止訪問
+      if ($obj['success']) {
+
+          if ($obj['kind'] == "學生") {
+              return back()->withErrors(['errors' => ['學生禁止進入']]);
+          }
+          if(!str_contains($obj['title'],'教務') & !str_contains($obj['title'],'教導') & !str_contains($obj['title'],'教學') & !str_contains($obj['title'],'註冊') & !str_contains($obj['title'],'資訊')){
+              return back()->withErrors(['errors' => ['職稱必須含「教務,教導,教學,註冊,資訊」等字眼方能進入。']]);
+          }
+
+          //是否已有此帳號
+          $user = User::where('username', $username[0])
+              ->where('login_type', 'gsuite')
+              ->first();
+
+          if (empty($user)) {
+              $school = School::where('code',$obj['code'])->first();
+              if(empty($school)){
+                  return back()->withErrors(['errors' => ['貴校不在系統內']]);
+              }
+              $att['name'] = $obj['name'];
+              $att['title'] = $obj['title']; 
+              $att['username'] = $username[0];
+              $att['password'] = bcrypt($request->input('password'));
+              $att['login_type'] = "gsuite"; 
+              $att['school_id'] = $school->id;                                               
+              $att['group_id'] = $school->group->id;     
+              $user = User::create($att);            
+          } else {                
+              //有此使用者，即更新使用者資料
+              $school = School::where('code',$obj['code'])->first();
+
+              $att['name'] = $obj['name'];
+              $att['title'] = $obj['title']; 
+              $att['username'] = $username[0];
+              $att['password'] = bcrypt($request->input('password'));                    
+              $att['login_type'] = "gsuite"; 
+              $att['school_id'] = $school->id;                                               
+              $att['group_id'] = $school->group->id; 
+              $user->update($att);                                               
+          }
+          if (Auth::attempt([
+              'username' => $username[0],
+              'password' => $request->input('password')
+               ])){
+              return redirect()->route('index');
+          }
+      };      
+
     }
 }
 
