@@ -185,12 +185,9 @@ class HomeController extends Controller
                 $att['group_id'] = $school->group->id; 
                 $user->update($att);                                               
             }
-            if (Auth::attempt([
-                'username' => $username[0],
-                //'password' => $request->input('password')
-                 ])){
-                return redirect()->route('index');
-            }
+            Auth::login($user);
+            return redirect()->route('index');
+            
         };
 
         return back()->withErrors(['errors' => ['帳號密碼錯誤']]);;
