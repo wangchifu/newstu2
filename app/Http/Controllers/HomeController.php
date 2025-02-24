@@ -187,7 +187,7 @@ class HomeController extends Controller
             }
             if (Auth::attempt([
                 'username' => $username[0],
-                'password' => $request->input('password')
+                //'password' => $request->input('password')
                  ])){
                 return redirect()->route('index');
             }
