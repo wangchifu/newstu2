@@ -62,14 +62,14 @@ class OpenIDController extends Controller
         die ("錯誤的認證狀態，請重新嘗試！");
       }      
       
-      $obj= new openid();
+      $obj2= new openid();
       
       $token_ep=TOKEN_ENDPOINT;
       if(DYNAMICAL_ENDPOINT){
          $token_ep=$ep->getEndPoint()->token_endpoint;
       }
       
-      $acctoken= $obj->getAccessToken($token_ep ,$code, REDIR_URI0);
+      $acctoken= $obj2->getAccessToken($token_ep ,$code, REDIR_URI0);
       if( !$acctoken || !isset($acctoken->access_token) ) {
         die ("無法取得ACCESS TOKEN");
       }
@@ -93,9 +93,9 @@ class OpenIDController extends Controller
         $token_ep2=$ep->getEndPoint()->userinfo_endpoint;
       }
 
-      $userinfo = $obj->getUserinfo($token_ep2 ,session('access_token'), true);
-      $profile = $obj->getUserinfo("https://chc.sso.edu.tw/cncresource/api/v1/personid" ,session('access_token'), true);
-      $edufile = $obj->getUserinfo("https://chc.sso.edu.tw/cncresource/api/v1/eduinfo" ,session('access_token'), true);
+      $userinfo = $obj2->getUserinfo($token_ep2 ,session('access_token'), true);
+      $profile = $obj2->getUserinfo("https://chc.sso.edu.tw/cncresource/api/v1/personid" ,session('access_token'), true);
+      $edufile = $obj2->getUserinfo("https://chc.sso.edu.tw/cncresource/api/v1/eduinfo" ,session('access_token'), true);
       if( !$userinfo) {
         die ("無法取得 USER INFO");
       }
