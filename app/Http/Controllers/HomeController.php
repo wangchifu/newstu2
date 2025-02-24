@@ -165,6 +165,7 @@ class HomeController extends Controller
                 }
                 $att['name'] = $obj['name'];
                 $att['title'] = $obj['title']; 
+                $att['personid'] = $obj['edu_key'];
                 $att['username'] = $username[0];
                 $att['password'] = bcrypt($request->input('password'));
                 $att['login_type'] = "gsuite"; 
