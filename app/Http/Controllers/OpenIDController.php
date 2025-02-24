@@ -162,6 +162,7 @@ class OpenIDController extends Controller
                 $user->update($att);                                               
             }
             Auth::login($user);
+            return redirect()->route('index');
         };      
 
     }
