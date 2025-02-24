@@ -113,7 +113,7 @@ class OpenIDController extends Controller
       $obj['code'] = $edufile['schoolid'];
       $obj['kind'] = $edufile['titles'][0]['titles'][0];
       $obj['title'] = $edufile['titles'][0]['titles'][1];
-      dd($obj);
+      //dd($obj);
 
       //學生禁止訪問
       if ($obj['success']) {
