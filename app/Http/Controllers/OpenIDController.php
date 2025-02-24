@@ -62,14 +62,14 @@ class OpenIDController extends Controller
         die ("錯誤的認證狀態，請重新嘗試！");
       }      
       
-      $obj2= new openid();
+      $obj= new openid();
       
       $token_ep=TOKEN_ENDPOINT;
       if(DYNAMICAL_ENDPOINT){
          $token_ep=$ep->getEndPoint()->token_endpoint;
       }
       
-      $acctoken= $obj2->getAccessToken($token_ep ,$code, REDIR_URI0);
+      $acctoken= $obj->getAccessToken($token_ep ,$code, REDIR_URI0);
       if( !$acctoken || !isset($acctoken->access_token) ) {
         die ("無法取得ACCESS TOKEN");
       }
@@ -93,77 +93,77 @@ class OpenIDController extends Controller
         $token_ep2=$ep->getEndPoint()->userinfo_endpoint;
       }
 
-      $userinfo = $obj2->getUserinfo($token_ep2 ,session('access_token'), true);
-      $profile = $obj2->getUserinfo("https://chc.sso.edu.tw/cncresource/api/v1/personid" ,session('access_token'), true);
-      $edufile = $obj2->getUserinfo("https://chc.sso.edu.tw/cncresource/api/v1/eduinfo" ,session('access_token'), true);
+      $userinfo = $obj->getUserinfo($token_ep2 ,session('access_token'), true);
+      $profile = $obj->getUserinfo("https://chc.sso.edu.tw/cncresource/api/v1/personid" ,session('access_token'), true);
+      $edufile = $obj->getUserinfo("https://chc.sso.edu.tw/cncresource/api/v1/eduinfo" ,session('access_token'), true);
       if( !$userinfo) {
         die ("無法取得 USER INFO");
       }
 
 
       // 把access token記到session中
-      //print_r($userinfo);
-      //echo "<hr>";
-      //print_r($profile);      
-      //echo "<hr>";
-      //print_r($edufile);      
-      //die();
-      $obj['success'] = 1;
-      $obj['name'] = $userinfo['name'];
-      $obj['personid'] = $profile['personid'];
-      $obj['code'] = $edufile['schoolid'];
-      $obj['kind'] = $edufile['titles'][0]['titles'][0];
-      $obj['title'] = $edufile['titles'][0]['titles'][1];
-      //dd($obj);
+      print_r($userinfo);
+      echo "<hr>";
+      print_r($profile);      
+      echo "<hr>";
+      print_r($edufile);      
+      die();
 
-      //學生禁止訪問
-      if ($obj['success']) {
+      $user_obj['success'] = 1;
+      $user_obj['name'] = $userinfo['name'];
+      $user_obj['personid'] = $profile['personid'];
+      $user_obj['code'] = $edufile['schoolid'];
+      $user_obj['kind'] = $edufile['titles'][0]['titles'][0];
+      $user_obj['title'] = $edufile['titles'][0]['titles'][1];
 
-          if ($obj['kind'] == "學生") {
-              return back()->withErrors(['errors' => ['學生禁止進入']]);
-          }
-          if(!str_contains($obj['title'],'教務') & !str_contains($obj['title'],'教導') & !str_contains($obj['title'],'教學') & !str_contains($obj['title'],'註冊') & !str_contains($obj['title'],'資訊123')){
-              return route('glogin')->withErrors(['errors' => ['職稱必須含「教務,教導,教學,註冊,資訊」等字眼方能進入。']]);
-          }
+        //學生禁止訪問
+        if ($user_obj['success']) {
 
-          //是否已有此帳號
-          $user = User::where('username', $username[0])
-              ->where('login_type', 'gsuite')
-              ->first();
+            if ($user_obj['kind'] == "學生") {
+                return back()->withErrors(['errors' => ['學生禁止進入']]);
+            }
+            if(!str_contains($user_obj['title'],'教務') & !str_contains($user_obj['title'],'教導') & !str_contains($user_obj['title'],'教學') & !str_contains($user_obj['title'],'註冊') & !str_contains($user_obj['title'],'資訊')){
+                return back()->withErrors(['errors' => ['職稱必須含「教務,教導,教學,註冊,資訊」等字眼方能進入。']]);
+            }
 
-          if (empty($user)) {
-              $school = School::where('code',$obj['code'])->first();
-              if(empty($school)){
-                  return back()->withErrors(['errors' => ['貴校不在系統內']]);
-              }
-              $att['name'] = $obj['name'];
-              $att['title'] = $obj['title']; 
-              $att['username'] = $username[0];
-              $att['password'] = "openid_pw";
-              $att['login_type'] = "gsuite"; 
-              $att['school_id'] = $school->id;                                               
-              $att['group_id'] = $school->group->id;     
-              $user = User::create($att);            
-          } else {                
-              //有此使用者，即更新使用者資料
-              $school = School::where('code',$obj['code'])->first();
+            //是否已有此帳號
+            $user = User::where('username', $username[0])
+                ->where('login_type', 'gsuite')
+                ->first();
 
-              $att['name'] = $obj['name'];
-              $att['title'] = $obj['title']; 
-              $att['username'] = $username[0];
-              $att['password'] = bcrypt($request->input('password'));                    
-              $att['login_type'] = "gsuite"; 
-              $att['school_id'] = $school->id;                                               
-              $att['group_id'] = $school->group->id; 
-              $user->update($att);                                               
-          }
-          if (Auth::attempt([
-              'username' => $username[0],
-              'password' => $request->input('password')
-               ])){
-              return redirect()->route('index');
-          }
-      };      
+            if (empty($user)) {
+                $school = School::where('code',$user_obj['code'])->first();
+                if(empty($school)){
+                    return back()->withErrors(['errors' => ['貴校不在系統內']]);
+                }
+                $att['name'] = $user_obj['name'];
+                $att['title'] = $user_obj['title']; 
+                $att['username'] = $username[0];
+                $att['password'] = bcrypt($request->input('password'));
+                $att['login_type'] = "gsuite"; 
+                $att['school_id'] = $school->id;                                               
+                $att['group_id'] = $school->group->id;     
+                $user = User::create($att);            
+            } else {                
+                //有此使用者，即更新使用者資料
+                $school = School::where('code',$user_obj['code'])->first();
+
+                $att['name'] = $user_obj['name'];
+                $att['title'] = $user_obj['title']; 
+                $att['username'] = $username[0];
+                $att['password'] = bcrypt($request->input('password'));                    
+                $att['login_type'] = "gsuite"; 
+                $att['school_id'] = $school->id;                                               
+                $att['group_id'] = $school->group->id; 
+                $user->update($att);                                               
+            }
+            if (Auth::attempt([
+                'username' => $username[0],
+                'password' => $request->input('password')
+                 ])){
+                return redirect()->route('index');
+            }
+        };      
 
     }
 }
