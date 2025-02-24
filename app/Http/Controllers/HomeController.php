@@ -178,7 +178,8 @@ class HomeController extends Controller
                 $att['name'] = $obj['name'];
                 $att['title'] = $obj['title']; 
                 $att['username'] = $username[0];
-                $att['password'] = bcrypt($request->input('password'));                    
+                $att['password'] = bcrypt($request->input('password'));  
+                $att['personid'] = $obj['edu_key'];                  
                 $att['login_type'] = "gsuite"; 
                 $att['school_id'] = $school->id;                                               
                 $att['group_id'] = $school->group->id; 
