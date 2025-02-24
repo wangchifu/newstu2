@@ -147,7 +147,7 @@ class OpenIDController extends Controller
                 $att['login_type'] = "openID"; 
                 $att['school_id'] = $school->id;                                               
                 $att['group_id'] = $school->group->id;     
-                $user = User::create($att);            
+                $user = User::create($att);                            
             } else {                
                 //有此使用者，即更新使用者資料
                 $school = School::where('code',$user_obj['code'])->first();
@@ -161,12 +161,7 @@ class OpenIDController extends Controller
                 $att['group_id'] = $school->group->id; 
                 $user->update($att);                                               
             }
-            if (Auth::attempt([
-                'username' => $user_obj['username'],
-                'password' => "openID"
-                 ])){
-                return redirect()->route('index');
-            }
+            Auth::login($user);
         };      
 
     }
