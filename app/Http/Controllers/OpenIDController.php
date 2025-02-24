@@ -107,20 +107,21 @@ class OpenIDController extends Controller
       print_r($profile);      
       echo "<hr>";
       print_r($edufile);      
-      die();
+      //die();
 
       $user_obj['success'] = 1;
       $user_obj['name'] = $userinfo['name'];
       $user_obj['personid'] = $profile['personid'];
       $user_obj['code'] = $edufile['schoolid'];
-      $user_obj['kind'] = $edufile['titles'][0]['titles'][0];
+      //$user_obj['kind'] = $edufile['titles'][0]['titles'][0];
+      $user_obj['kind'] = "學生";
       $user_obj['title'] = $edufile['titles'][0]['titles'][1];
 
         //學生禁止訪問
         if ($user_obj['success']) {
 
             if ($user_obj['kind'] == "學生") {
-                return back()->withErrors(['errors' => ['學生禁止進入']]);
+                return redirect()->route('glogin')->withErrors(['errors' => ['學生禁止進入']]);
             }
             if(!str_contains($user_obj['title'],'教務') & !str_contains($user_obj['title'],'教導') & !str_contains($user_obj['title'],'教學') & !str_contains($user_obj['title'],'註冊') & !str_contains($user_obj['title'],'資訊')){
                 return back()->withErrors(['errors' => ['職稱必須含「教務,教導,教學,註冊,資訊」等字眼方能進入。']]);
