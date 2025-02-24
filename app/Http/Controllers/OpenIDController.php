@@ -109,12 +109,13 @@ class OpenIDController extends Controller
       print_r($edufile);      
       //die();
 
+      $user_obj['username'] = $userinfo['sub'];
+      $user_obj['password'] = "openID";
       $user_obj['success'] = 1;
-      $user_obj['name'] = $userinfo['name'];
+      $user_obj['name'] = $userinfo['name'];      
       $user_obj['personid'] = $profile['personid'];
       $user_obj['code'] = $edufile['schoolid'];
-      //$user_obj['kind'] = $edufile['titles'][0]['titles'][0];
-      $user_obj['kind'] = "學生";
+      $user_obj['kind'] = $edufile['titles'][0]['titles'][0];      
       $user_obj['title'] = $edufile['titles'][0]['titles'][1];
 
         //學生禁止訪問
@@ -124,24 +125,23 @@ class OpenIDController extends Controller
                 return redirect()->route('glogin')->withErrors(['errors' => ['學生禁止進入']]);
             }
             if(!str_contains($user_obj['title'],'教務') & !str_contains($user_obj['title'],'教導') & !str_contains($user_obj['title'],'教學') & !str_contains($user_obj['title'],'註冊') & !str_contains($user_obj['title'],'資訊')){
-                return back()->withErrors(['errors' => ['職稱必須含「教務,教導,教學,註冊,資訊」等字眼方能進入。']]);
+                return redirect()->route('glogin')->withErrors(['errors' => ['職稱必須含「教務,教導,教學,註冊,資訊」等字眼方能進入。']]);
             }
 
             //是否已有此帳號
-            $user = User::where('username', $username[0])
-                ->where('login_type', 'gsuite')
+            $user = User::where('personid', $user_obj['personid'])                
                 ->first();
 
             if (empty($user)) {
                 $school = School::where('code',$user_obj['code'])->first();
                 if(empty($school)){
-                    return back()->withErrors(['errors' => ['貴校不在系統內']]);
+                    return redirect()->route('glogin')->withErrors(['errors' => ['貴校不在系統內']]);
                 }
                 $att['name'] = $user_obj['name'];
                 $att['title'] = $user_obj['title']; 
-                $att['username'] = $username[0];
-                $att['password'] = bcrypt($request->input('password'));
-                $att['login_type'] = "gsuite"; 
+                $att['username'] = $user_obj['username'];
+                $att['password'] = $user_obj['password'];
+                $att['login_type'] = "openID"; 
                 $att['school_id'] = $school->id;                                               
                 $att['group_id'] = $school->group->id;     
                 $user = User::create($att);            
@@ -151,16 +151,16 @@ class OpenIDController extends Controller
 
                 $att['name'] = $user_obj['name'];
                 $att['title'] = $user_obj['title']; 
-                $att['username'] = $username[0];
-                $att['password'] = bcrypt($request->input('password'));                    
-                $att['login_type'] = "gsuite"; 
+                $att['username'] = $user_obj['username'];
+                $att['password'] = $user_obj['password'];                    
+                $att['login_type'] = "openID"; 
                 $att['school_id'] = $school->id;                                               
                 $att['group_id'] = $school->group->id; 
                 $user->update($att);                                               
             }
             if (Auth::attempt([
-                'username' => $username[0],
-                'password' => $request->input('password')
+                'username' => $user_obj['username'],
+                'password' => "openID"
                  ])){
                 return redirect()->route('index');
             }
