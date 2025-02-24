@@ -110,6 +110,7 @@ class OpenIDController extends Controller
       //die();
       $obj['success'] = 1;
       $obj['name'] = $userinfo['name'];
+      $obj['personid'] = $profile['personid'];
       $obj['code'] = $edufile['schoolid'];
       $obj['kind'] = $edufile['titles'][0]['titles'][0];
       $obj['title'] = $edufile['titles'][0]['titles'][1];
@@ -121,8 +122,8 @@ class OpenIDController extends Controller
           if ($obj['kind'] == "學生") {
               return back()->withErrors(['errors' => ['學生禁止進入']]);
           }
-          if(!str_contains($obj['title'],'教務') & !str_contains($obj['title'],'教導') & !str_contains($obj['title'],'教學') & !str_contains($obj['title'],'註冊') & !str_contains($obj['title'],'資訊')){
-              return back()->withErrors(['errors' => ['職稱必須含「教務,教導,教學,註冊,資訊」等字眼方能進入。']]);
+          if(!str_contains($obj['title'],'教務') & !str_contains($obj['title'],'教導') & !str_contains($obj['title'],'教學') & !str_contains($obj['title'],'註冊') & !str_contains($obj['title'],'資訊123')){
+              return route('glogin')->withErrors(['errors' => ['職稱必須含「教務,教導,教學,註冊,資訊」等字眼方能進入。']]);
           }
 
           //是否已有此帳號
@@ -138,7 +139,7 @@ class OpenIDController extends Controller
               $att['name'] = $obj['name'];
               $att['title'] = $obj['title']; 
               $att['username'] = $username[0];
-              $att['password'] = bcrypt($request->input('password'));
+              $att['password'] = "openid_pw";
               $att['login_type'] = "gsuite"; 
               $att['school_id'] = $school->id;                                               
               $att['group_id'] = $school->group->id;     
