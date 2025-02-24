@@ -154,8 +154,7 @@ class HomeController extends Controller
             }
 
             //是否已有此帳號
-            $user = User::where('personid', $obj['edu_key'])
-                ->where('login_type', 'gsuite')
+            $user = User::where('personid', $obj['edu_key'])                
                 ->first();
 
             if (empty($user)) {
