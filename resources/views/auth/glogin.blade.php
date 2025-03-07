@@ -21,47 +21,52 @@
               <h5 class="card-title text-center pb-0 fs-4">請登入你的帳號</h5>
               <p class="text-center small">請選擇登入方式</p>
             </div>
-            <table>
-              <tr>
-                <td class="col-6">
-                  <form class="row g-3 needs-validation" novalidate method="post" action="{{ route('gauth') }}">
-                    @csrf
-                    <div class="col-12">
-                      <label for="yourUsername" class="form-label">1.彰化 GSuite 帳號</label>
-                      <div class="input-group has-validation">
-                        <span class="input-group-text" id="inputGroupPrepend"><i class="bi bi-person-fill"></i></span>
-                        <input type="text" name="username" class="form-control" id="yourUsername" required autofocus>
-                        <div class="invalid-feedback">請輸入帳號.</div>
-                      </div>
-                    </div>
-      
-                    <div class="col-12">
-                      <label for="yourPassword" class="form-label">密碼</label>
-                      <input type="password" name="password" class="form-control" id="yourPassword" required>
-                      <div class="invalid-feedback">請輸入密碼!</div>
-                    </div>
-                    <div class="col-12">
-                      <img src="{{ route('pic') }}" class="img-fluid">
-                    </div>                     
-                    <div class="col-12">
-                      <input type="text" name="chaptcha" class="form-control" id="chaptcha" placeholder="上圖數字" required maxlength="5">
-                      <div class="invalid-feedback">請輸入驗證碼.</div>
-                    </div> 
-                    <div class="col-12">
-                      @include('layouts.errors')
-                      <button class="btn btn-primary w-100" type="submit">GSuite登入</button>
-                    </div>
-                  </form>
-                </td>
-                <td class="col-6" style="vertical-align: top">
+            <ul class="nav nav-tabs" id="myTab" role="tablist">
+              <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="home-tab" data-toggle="tab" data-target="#home" type="button" role="tab" aria-controls="home" aria-selected="true">1.彰化 GSuite</button>
+              </li>
+              <li class="nav-item" role="presentation">
+                  <a class="nav-link" href="{{ route('sso') }}">2.教育雲端帳號</a>
+                <!--  
+                <button class="nav-link" id="profile-tab" data-toggle="tab" data-target="#profile" type="button" role="tab" aria-controls="profile" aria-selected="false">2.彰化縣教育雲端帳號登入</button>
+                -->
+              </li>                    
+            </ul>
+            <div class="tab-content" id="myTabContent">
+              <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
+                <form class="row g-3 needs-validation" novalidate method="post" action="{{ route('gauth') }}">
+                  @csrf
                   <div class="col-12">
-                    <label for="yourUsername" class="form-label">2.彰化縣 OpenID 帳號</label>
-                    <a href="{{ route('sso') }}"><img src="{{ asset('img/chc.png') }}" style="width:100%;margin:10px;"></a>
+                    <label for="yourUsername" class="form-label">@chc.edu.tw</label>
+                    <div class="input-group has-validation">
+                      <span class="input-group-text" id="inputGroupPrepend"><i class="bi bi-person-fill"></i></span>
+                      <input type="text" name="username" class="form-control" id="yourUsername" required autofocus>
+                      <div class="invalid-feedback">請輸入帳號.</div>
+                    </div>
                   </div>
-                </td>
-              </tr>
-            </table>            
-
+    
+                  <div class="col-12">
+                    <label for="yourPassword" class="form-label">密碼</label>
+                    <input type="password" name="password" class="form-control" id="yourPassword" required>
+                    <div class="invalid-feedback">請輸入密碼!</div>
+                  </div>
+                  <div class="col-12">
+                    <img src="{{ route('pic') }}" class="img-fluid">
+                  </div>                     
+                  <div class="col-12">
+                    <input type="text" name="chaptcha" class="form-control" id="chaptcha" placeholder="上圖數字" required maxlength="5">
+                    <div class="invalid-feedback">請輸入驗證碼.</div>
+                  </div> 
+                  <div class="col-12">
+                    @include('layouts.errors')
+                    <button class="btn btn-primary w-100" type="submit">GSuite登入</button>
+                  </div>
+                </form>                  
+              </div>
+              <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
+                ...
+              </div> 
+            </div>           
           </div>
         </div>
 
