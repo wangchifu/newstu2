@@ -43,7 +43,7 @@
 @for($i=0;$i<$school->class_num;$i++)
 <table class="styled-table">
   <tr>
-    <td colspan="7">
+    <td colspan="8">
       <h4 style="margin-bottom: -10px;">彰化縣{{ $school->name }} 一年{{ $eng_class[$i] }}班 新生編班名冊</h4>
       <p style="text-align:right;margin:2px;">導師：<span class="underline">　{{ $student_data[$eng_class[$i]]['teacher'] }}　</span></p>
     </td>
