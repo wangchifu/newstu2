@@ -65,6 +65,9 @@
       姓名
     </td>
     <td>
+      身分證末三碼
+    </td>
+    <td>
       原就讀學校
     </td>
     <td>
@@ -85,6 +88,7 @@
         @endif
       </td>
       <td>{{ $v['name'] }}</td>
+      <td>{{ $v['id_number'] }}</td>
       <td></td>
       <td></td>
     </tr>

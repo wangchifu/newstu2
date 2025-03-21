@@ -1173,6 +1173,7 @@ class GroupAdminController extends Controller
             //$student_data[$student->class]['st'][$student->num]['special'] = $student->special;
             $student_data[$student->class]['st'][$student->num]['name'] = $student->name;
             $student_data[$student->class]['st'][$student->num]['sex'] = $student->sex;
+            $student_data[$student->class]['st'][$student->num]['id_number'] = substr($student->id_number,-3);
             
             if(!empty($student->teacher)){
                 $student_data[$student->class]['teacher'] = $student->teacher->name;
@@ -1220,6 +1221,7 @@ class GroupAdminController extends Controller
             //$student_data[$student->class]['st'][$student->num]['special'] = $student->special;
             $student_data[$student->class]['st'][$student->num]['name'] = substr_cut_name($student->name);
             $student_data[$student->class]['st'][$student->num]['sex'] = $student->sex;
+            $student_data[$student->class]['st'][$student->num]['id_number'] = substr($student->id_number,-3);
             
             if(!empty($student->teacher)){
                 $student_data[$student->class]['teacher'] = $student->teacher->name;
