@@ -53,7 +53,7 @@
             </li>
             <li>
               <a class="dropdown-item d-flex align-items-center" href="{{ route('test_start') }}">
-                <i class="bi bi-gear"></i>
+                <i class="bi bi-sign-intersection-t"></i>
                 <span>3.測試編班</span>
               </a>
             </li>

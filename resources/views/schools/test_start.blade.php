@@ -11,28 +11,28 @@
     <div class="card-body">
       <h5 class="card-title">僅供除錯與練習，不是正式編班的地方，請不要搞錯了！</h5>    
       <a href="#!" class="btn btn-outline-success" onclick="sw_confirm1('會刪除目前測試區的學生喔！','{{ route('test_copy') }}')">複製目前的學生到這裡來測試</a>                 
-      <table class="table table-hover">
+      <table class="table table-hover table-bordered">
         <thead>
           <tr>
-            <th scope="col">
+            <th scope="col" nowrap>
               校名
             </th>            
-            <th scope="col">
+            <th scope="col" nowrap>
               編班狀態
             </th>
-            <th scope="col">
+            <th scope="col" nowrap>
               動作1
             </th>
-            <th scope="col">
+            <th scope="col" nowrap>
               動作2
             </th>
-            <th scope="col">
+            <th scope="col" nowrap>
               動作3
             </th>
-            <th scope="col">
-              列印
+            <th scope="col" nowrap>
+              測試列印
             </th>
-            <th scope="col">
+            <th scope="col" nowrap>
               刪除
             </th>
           </tr>          
@@ -94,8 +94,8 @@
             </td>
             <td>
               @if(!empty($student->class))              
-              <a href="{{ route('test_print',$school->id) }}" class="btn btn-success" target="_blank"><i class="bi bi-printer-fill"></i> 「測試」列印</a>
-              <a href="{{ route('test_print2',$school->id) }}" class="btn btn-info" target="_blank"><i class="bi bi-printer-fill"></i> 「測試」列印(藏)</a>
+              <a href="{{ route('test_print',$school->id) }}" class="btn btn-success" target="_blank">列印</a>
+              <a href="{{ route('test_print2',$school->id) }}" class="btn btn-info" target="_blank">列印(藏)</a>
               @endif
             </td>
             <td>
