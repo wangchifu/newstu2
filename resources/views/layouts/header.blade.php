@@ -52,6 +52,12 @@
               </a>
             </li>
             <li>
+              <a class="dropdown-item d-flex align-items-center" href="{{ route('test_start') }}">
+                <i class="bi bi-gear"></i>
+                <span>3.測試編班</span>
+              </a>
+            </li>
+            <li>
               <hr class="dropdown-divider">
             </li>
             <li>

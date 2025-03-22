@@ -177,7 +177,7 @@ class GroupAdminController extends Controller
         return view('group_admins.show_class',$data);
     }
 
-    function form_class(School $school){
+    public function form_class(School $school){
         if($school->group_id != auth()->user()->group_id){
             return back();    
         }
@@ -189,7 +189,7 @@ class GroupAdminController extends Controller
         return view('group_admins.form_class',$data);
     }
 
-    function delete_all(Group $group){
+    public function delete_all(Group $group){
         $schools = School::where('group_id',$group->id)->get();
 
         $event = "是管理者，他為 ".$group->name." 刪除了所有的資料。";     
@@ -226,7 +226,7 @@ class GroupAdminController extends Controller
         return redirect()->route('start');
     }
 
-    function delete123(School $school){
+    public function delete123(School $school){
         $att['class_num'] = null;
         $att['ready'] = null;
         $att['ready_user_id'] = null;
@@ -241,7 +241,7 @@ class GroupAdminController extends Controller
         return redirect()->route('start');
     }
 
-    function delete23(School $school){
+    public function delete23(School $school){
         $att['class'] = null;
         $att['num'] = null;
         $att['teacher_id'] = null;
@@ -255,7 +255,7 @@ class GroupAdminController extends Controller
         return redirect()->route('start');
     }
 
-    function delete3(School $school){
+    public function delete3(School $school){
         $att['teacher_id'] = null;        
         Student::where('code',$school->code)->update($att);
 
@@ -264,7 +264,7 @@ class GroupAdminController extends Controller
         return redirect()->route('start');
     }
 
-    function go_form(Request $request,School $school){
+    public function go_form(Request $request,School $school){
         if(empty($request->input('random_seed'))){
             return back()->withErrors(['errors' => ['錯誤：亂數種子不可以空著！']]);
         }
@@ -967,7 +967,7 @@ class GroupAdminController extends Controller
         
     }
 
-    function form_teacher(School $school){
+    public function form_teacher(School $school){
         if($school->group_id != auth()->user()->group_id){
             return back();    
         }
@@ -1006,7 +1006,7 @@ class GroupAdminController extends Controller
         return view('group_admins.form_teacher',$data);
     }
 
-    function go_form_teacher(Request $request,School $school){        
+    public function go_form_teacher(Request $request,School $school){        
         if(empty($request->input('random_seed'))){
             return back()->withErrors(['errors' => ['錯誤：亂數種子不可以空著！']]);
         }
@@ -1109,7 +1109,7 @@ class GroupAdminController extends Controller
         return view('group_admins.show_teacher',$data);
     }
 
-    function form_order(School $school){
+    public function form_order(School $school){
         if($school->group_id != auth()->user()->group_id){
             return back();    
         }
@@ -1124,7 +1124,7 @@ class GroupAdminController extends Controller
         return view('group_admins.form_order',$data);
     }
 
-    function go_form_order(Request $request,School $school){
+    public function go_form_order(Request $request,School $school){
         $eng_class = [0=>'A1',1=>'A2',2=>'A3',3=>'A4',4=>'A5',5=>'A6',6=>'A7',7=>'A8',8=>'A9',9=>'A10',10=>'A11',11=>'A12',12=>'A13',13=>'A14',14=>'A15',15=>'A16',16=>'A17',17=>'A18',18=>'A19',19=>'A20',20=>'A21',21=>'A22',22=>'A23',23=>'A24',24=>'A25',25=>'A26'];
         for($i=0;$i<$school->class_num;$i++){
             $students[$eng_class[$i]] = Student::where('code',$school->code)->where('class',$eng_class[$i])->get();
@@ -1335,7 +1335,7 @@ class GroupAdminController extends Controller
         exit;
     }
 
-    function group_log(){
+    public function group_log(){
         $logs  = Log::where('group_id',auth()->user()->group_id)->orderBy('created_at','DESC')->paginate(20);
         $data = [
             'logs'=>$logs,

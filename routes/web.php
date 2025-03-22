@@ -61,6 +61,23 @@ Route::get('edit_student/{student}', [SchoolController::class, 'edit_student'])-
 Route::post('update_student/{student}', [SchoolController::class, 'update_student'])->name('update_student');
 Route::post('school_ready', [SchoolController::class, 'school_ready'])->name('school_ready');
 Route::get('school_log', [SchoolController::class, 'school_log'])->name('school_log');
+Route::get('test_start', [SchoolController::class, 'test_start'])->name('test_start');
+Route::get('test_copy', [SchoolController::class, 'test_copy'])->name('test_copy');
+Route::get('test_show_student/{school}', [SchoolController::class, 'test_show_student'])->name('test_show_student');
+Route::get('test_form_class/{school}', [SchoolController::class, 'test_form_class'])->name('test_form_class');
+Route::post('test_go_form/{school}', [SchoolController::class, 'test_go_form'])->name('test_go_form');
+Route::get('test_show_class/{school}', [SchoolController::class, 'test_show_class'])->name('test_show_class');
+Route::get('test_form_teacher/{school}', [SchoolController::class, 'test_form_teacher'])->name('test_form_teacher');
+Route::post('test_go_form_teacher/{school}', [SchoolController::class, 'test_go_form_teacher'])->name('test_go_form_teacher');
+Route::get('test_show_teacher/{school}', [SchoolController::class, 'test_show_teacher'])->name('test_show_teacher');
+Route::get('test_form_order/{school}', [SchoolController::class, 'test_form_order'])->name('test_form_order');
+Route::post('test_go_form_order/{school}', [SchoolController::class, 'test_go_form_order'])->name('test_go_form_order');
+Route::get('test_print/{school}', [SchoolController::class, 'test_print'])->name('test_print');
+Route::get('test_print2/{school}', [SchoolController::class, 'test_print2'])->name('test_print2');
+Route::get('test_delete123/{school}', [SchoolController::class, 'test_delete123'])->name('test_delete123');
+Route::get('test_delete23/{school}', [SchoolController::class, 'test_delete23'])->name('test_delete23');
+Route::get('test_delete3/{school}', [SchoolController::class, 'test_delete3'])->name('test_delete3');
+
 });
 
 Route::group(['middleware' => 'group_admin'], function () {
