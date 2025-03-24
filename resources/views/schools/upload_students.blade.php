@@ -45,7 +45,7 @@
         校名：{{ auth()->user()->school->name }} 班級數：{{ $class_num }} 學生數：{{ count($student_data[$semester_year]) }}<br>
         老師：
         @foreach($teachers as $teacher)
-          {{ $teacher->name }}
+          {{ $teacher->name }}，
         @endforeach
         <table class="table table-hover">
           <thead>
