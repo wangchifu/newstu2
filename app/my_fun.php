@@ -25,8 +25,8 @@ function chk_id_number($cardid) {
 
     //驗證男女性別
     $gender = substr($cardid,1,1);//取性別位置
-    //驗證性別
-    if($gender !='1' && $gender !='2'){
+    //驗證性別,89為新式居留證號8為男，9為女
+    if($gender !='1' && $gender !='2' && $gender !='8' && $gender !='9'){
         $err = '3';
         return false;
     }

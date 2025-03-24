@@ -160,7 +160,7 @@ class SchoolController extends Controller
             return back()->withErrors(['errors' => ['錯誤：學生總數上('.$student_num.')下('.$students.')不合！？']]);
         }
         if(!empty($error_id_number)){
-            return back()->withErrors(['errors' => ['錯誤：學生身分證有誤：'.$error_id_number]]);
+            return back()->withErrors(['errors' => ['錯誤：學生身分證(居留證)有誤：'.$error_id_number]]);
         }
 
         if(count($teacher_array) != $class_num){
