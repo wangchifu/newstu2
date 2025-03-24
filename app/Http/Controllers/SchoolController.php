@@ -332,6 +332,10 @@ class SchoolController extends Controller
             $student_data[$student->class]['subtract'] = $student_data[$student->class]['subtract']+$student->subtract;            
         }
         //dd($student_data);
+        //記錄                
+        $event = "看了 ".$school->name." 班級學生編班資料。";                
+        logging($event,auth()->user()->school->code,get_ip());
+
         $data = [
             'school'=>$school,
             'students'=>$students,
@@ -418,8 +422,9 @@ class SchoolController extends Controller
         $writer = new Xlsx($spreadsheet);
         $writer->save('php://output'); // 將文件輸出到瀏覽器
 
-        $event = "是管理者，他下載了 ".$school->name." 班級學生編班資料。";                
-        logging($event,$school->code,get_ip());
+        //記錄                
+        $event = "下載了 ".$school->name." 班級學生編班資料檔案。";                
+        logging($event,auth()->user()->school->code,get_ip());
 
         exit;
     }

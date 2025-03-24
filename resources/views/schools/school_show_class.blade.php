@@ -19,7 +19,7 @@
           <thead>
             <tr>
               <th colspan="5">
-                <a href="{{ route('student_type') }}" class="btn btn-secondary"><i class="bi bi-chevron-double-left"></i> 返回</a> 全部分班一覽 <span class="small text-danger">◎請檢查是否流水號重複，如有缺號乃屬正常</span>
+                <a href="#!" class="btn btn-secondary" onclick="history.go(-1)"><i class="bi bi-chevron-double-left"></i> 返回</a> 全部分班一覽 <span class="small text-danger">◎請檢查是否流水號重複，如有缺號乃屬正常</span>
               </th>
             </tr>
           </thead>

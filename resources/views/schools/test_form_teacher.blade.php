@@ -47,16 +47,16 @@
                     <table class="table table-hover w-50">                      
                       @for($n=0;$n<$school->class_num;$n++)
                         <tr>
-                          <td style="width:80px;">
+                          <td style="width:80px;" nowrap>
                             班級：
                           </td>                          
-                          <td style="width:80px;">
+                          <td style="width:80px;" nowrap>
                             <input type="text" name="class_name[{{ $eng_class[$n] }}]" value="{{ $eng_class[$n] }}" class="form-control" readonly="readonly" style="color:red">
                           </td>
-                          <td style="width:80px;">
+                          <td style="width:80px;" nowrap>
                             導師：
                           </td>
-                          <td>
+                          <td nowrap>
                             <select class="form-control select-option" name="teacher[{{ $eng_class[$n] }}]" style="width:100px;">                              
                               @if(isset($with_teachers[$eng_class[$n]]))
                                 @foreach($teachers as $teacher)           
@@ -74,7 +74,7 @@
                               @endif                              
                             </select>
                           </td>     
-                          <td>
+                          <td nowrap>
                             @if(isset($with_teachers[$eng_class[$n]]))
                               <small class="text-secondary">({{ $with_students[$eng_class[$n]] }} 所綁定)</small>
                             @endif

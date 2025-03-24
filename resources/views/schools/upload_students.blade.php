@@ -30,7 +30,14 @@
             </div>
           </form>
         @else
-          <h5 class="card-title text-danger">**已送交編班中心無法再上傳**真有需求時請編班中心打開上鎖**</h5>
+            @if(!empty(auth()->user()->school->situation))
+              <p><span class="text-success">**編班完成**</span></p>
+              <a href="{{ route('school_show_class',auth()->user()->school->id) }}" class="btn btn-outline-primary">編班結果</a>
+              <a href="{{ route('school_export',auth()->user()->school->id) }}" class="btn btn-success" target="_blank"><i class="bi bi-cloud-arrow-down-fill"></i> 下載本校編班檔</a>
+            @else
+              <p><span class="text-danger">**已送交編班中心無法再更動**真有需求時請編班中心打開上鎖**</span></p>
+              <p><span class="text-danger">**尚未編班**</span></p>
+            @endif          
         @endif
       </div>
     </div>
