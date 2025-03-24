@@ -68,7 +68,13 @@
                                 <option value="0" style="color:red">--亂數--</option>
                                 @foreach($teachers as $teacher)                                                                
                                   @if(!in_array($teacher->name,$with_teachers))
-                                    <option value="{{ $teacher->id }}" style="color:blue">{{ $teacher->name }}</option>
+                                    @if(isset($without_teachers[$eng_class[$n]]))                                            
+                                      @if(!str_contains($without_teachers[$eng_class[$n]],$teacher->name))
+                                        <option value="{{ $teacher->id }}" style="color:blue">{{ $teacher->name }}</option>
+                                      @endif
+                                    @else
+                                      <option value="{{ $teacher->id }}" style="color:blue">{{ $teacher->name }}</option>
+                                    @endif                                    
                                   @endif
                                 @endforeach
                               @endif                              
