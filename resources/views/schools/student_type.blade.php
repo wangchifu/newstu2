@@ -83,8 +83,15 @@
             @include('layouts.errors')
             <a href="#" class="btn btn-primary" onclick="sw_confirm2('上傳編班中心不能再更改了喔！','go_send')"><i class="bi bi-arrow-right-circle-fill"></i> 確定送出不再修改</a>
           </form>
-        @else
-          <span class="text-danger">**已送交編班中心無法再更動**真有需求時請編班中心打開上鎖**</span>
+        @else          
+          @if(!empty(auth()->user()->school->situation))
+            <p><span class="text-success">**編班完成**</span></p>
+            <a href="{{ route('school_show_class',auth()->user()->school->id) }}" class="btn btn-outline-primary">編班結果</a>
+            <a href="{{ route('school_export',auth()->user()->school->id) }}" class="btn btn-success" target="_blank"><i class="bi bi-cloud-arrow-down-fill"></i> 下載本校編班檔</a>
+          @else
+            <p><span class="text-danger">**已送交編班中心無法再更動**真有需求時請編班中心打開上鎖**</span></p>
+            <p><span class="text-danger">**尚未編班**</span></p>
+          @endif
         @endif
         <table class="table table-hover">
           <thead>

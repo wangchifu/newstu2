@@ -57,6 +57,8 @@ Route::post('glogin', [HomeController::class, 'logout'])->name('logout');
 Route::get('upload_students/{semester_year?}', [SchoolController::class, 'upload_students'])->name('upload_students');
 Route::post('import_excel', [SchoolController::class, 'import_excel'])->name('import_excel');
 Route::get('student_type/{semester_year?}', [SchoolController::class, 'student_type'])->name('student_type');
+Route::get('school_show_class/{school}', [SchoolController::class, 'school_show_class'])->name('school_show_class');
+Route::get('school_export/{school}', [SchoolController::class, 'school_export'])->name('school_export');
 Route::get('edit_student/{student}', [SchoolController::class, 'edit_student'])->name('edit_student');
 Route::post('update_student/{student}', [SchoolController::class, 'update_student'])->name('update_student');
 Route::post('school_ready', [SchoolController::class, 'school_ready'])->name('school_ready');

@@ -11,6 +11,7 @@ use App\Models\Student;
 use App\Models\TestStudent;
 use App\Models\Teacher;
 use App\Models\Log;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use Illuminate\Support\Facades\DB;
 
 class SchoolController extends Controller
@@ -297,6 +298,130 @@ class SchoolController extends Controller
             'ready'=>$school->ready,
         ];
         return view('schools.student_type',$data);
+    }
+
+    public function school_show_class(School $school){
+        if($school->code != auth()->user()->school->code){
+            return back();    
+        }
+        $students = Student::where('code',$school->code)
+            ->orderBy('class')->orderBy('num')->get();
+                
+        $student = Student::where('code',$school->code)->first();
+        $semester_year = $student->semester_year;
+        $eng_class = [0=>'A1',1=>'A2',2=>'A3',3=>'A4',4=>'A5',5=>'A6',6=>'A7',7=>'A8',8=>'A9',9=>'A10',10=>'A11',11=>'A12',12=>'A13',13=>'A14',14=>'A15',15=>'A16',16=>'A17',17=>'A18',18=>'A19',19=>'A20',20=>'A21',21=>'A22',22=>'A23',23=>'A24',24=>'A25',25=>'A26'];
+        
+        foreach($students as $student){            
+            $student_data[$student->class]['st'][$student->num]['no'] = $student->no;
+            $student_data[$student->class]['st'][$student->num]['special'] = $student->special;
+            $student_data[$student->class]['st'][$student->num]['name'] = $student->name;
+            $student_data[$student->class]['st'][$student->num]['sex'] = $student->sex;
+            if(!empty($student->teacher)){
+                $student_data[$student->class]['teacher'] = $student->teacher->name;
+            }else{
+                $student_data[$student->class]['teacher'] = null;
+            }
+            
+            if(!isset($student_data[$student->class]['all'])) $student_data[$student->class]['all'] = 0;
+            if(!isset($student_data[$student->class]['boy'])) $student_data[$student->class]['boy'] = 0;
+            if(!isset($student_data[$student->class]['girl'])) $student_data[$student->class]['girl'] = 0;
+            if(!isset($student_data[$student->class]['subtract'])) $student_data[$student->class]['subtract'] = 0;
+            $student_data[$student->class]['all']++;
+            if($student->sex == 1) $student_data[$student->class]['boy']++;
+            if($student->sex == 2) $student_data[$student->class]['girl']++;
+            $student_data[$student->class]['subtract'] = $student_data[$student->class]['subtract']+$student->subtract;            
+        }
+        //dd($student_data);
+        $data = [
+            'school'=>$school,
+            'students'=>$students,
+            'semester_year'=>$semester_year,
+            'eng_class'=>$eng_class,
+            'student_data'=>$student_data,
+        ];
+        return view('schools.school_show_class',$data);
+    }
+    
+    public function school_export(School $school){
+        if($school->code != auth()->user()->school->code){
+            return back();    
+        }        
+        $students = Student::where('code',$school->code)
+            ->orderBy('class')->orderBy('num')->get();
+        $teachers = Teacher::where('code',$school->code)->get();
+        $student = Student::where('code',$school->code)->orderBy('class')->orderBy('num')->first();
+        $semester_year = $student->semester_year;
+        $eng_class = [0=>'A1',1=>'A2',2=>'A3',3=>'A4',4=>'A5',5=>'A6',6=>'A7',7=>'A8',8=>'A9',9=>'A10',10=>'A11',11=>'A12',12=>'A13',13=>'A14',14=>'A15',15=>'A16',16=>'A17',17=>'A18',18=>'A19',19=>'A20',20=>'A21',21=>'A22',22=>'A23',23=>'A24',24=>'A25',25=>'A26'];
+        
+        foreach($students as $student){            
+            $student_data[$student->class]['st'][$student->num]['no'] = $student->no;                        
+            $student_data[$student->class]['st'][$student->num]['name'] = $student->name;
+            $student_data[$student->class]['st'][$student->num]['sex'] = $student->sex;
+        }
+
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+
+        // 設置工作表內容
+        $sheet->setCellValue('A1', '校名');
+        $sheet->setCellValue('B1', '彰化縣'.$school->name);
+        $sheet->setCellValue('C1', '班級數');
+        $sheet->setCellValue('D1', $school->class_num);
+        $sheet->setCellValue('E1', count($students));
+        $cell_name = [1=>'A',2=>'B',3=>'C',4=>'D',5=>'E',6=>'F',7=>'G',8=>'H',9=>'I',10=>'J',11=>'K',12=>'L',13=>'M',14=>'N',15=>'O',16=>'P',17=>'Q',18=>'R',19=>'S',20=>'T',21=>'U',22=>'V',23=>'W',24=>'X',25=>'Y',26=>'Z'];
+        $eng_class = [1=>'A1',2=>'A2',3=>'A3',4=>'A4',5=>'A5',6=>'A6',7=>'A7',8=>'A8',9=>'A9',10=>'A10',11=>'A11',12=>'A12',13=>'A13',14=>'A14',15=>'A15',16=>'A16',17=>'A17',18=>'A18',19=>'A19',20=>'A20',21=>'A21',22=>'A22',23=>'A23',24=>'A24',25=>'A25',26=>'A26'];
+        $class_eng = array_flip($eng_class);
+        $n=1;
+        foreach($teachers as $teacher){
+            $sheet->setCellValue($cell_name[$n].'2', $teacher->name);
+            $n++;
+        }
+        $sheet->setCellValue('A3', '流水號');
+        $sheet->setCellValue('B3', '班級');
+        $sheet->setCellValue('C3', '座號');
+        $sheet->setCellValue('D3', '性別');
+        $sheet->setCellValue('E3', '姓名');
+        $sheet->setCellValue('F3', '身分證字號');
+        $sheet->setCellValue('G3', '原就讀學校');
+        $sheet->setCellValue('H3', '編班類別');
+        $sheet->setCellValue('I3', '相關流水號');
+        $sheet->setCellValue('J3', '備註');        
+
+        $n=4;
+        foreach($students as $student){
+            $sheet->setCellValue('A'.$n, $student->no);
+            $sheet->setCellValue('B'.$n, $class_eng[$student->class]);
+            $sheet->setCellValue('C'.$n, $student->num);
+            $sheet->setCellValue('D'.$n, $student->sex);
+            $sheet->setCellValue('E'.$n, $student->name);
+            $sheet->setCellValue('F'.$n, $student->id_number);
+            $sheet->setCellValue('G'.$n, $school->name);
+            $sheet->setCellValue('H'.$n, $student->type);
+            $sheet->setCellValue('I'.$n, $student->another_no);
+            $sheet->setCellValue('J'.$n, "");
+            $n++;
+        }
+
+
+        // 設置標題
+        $sheet->setTitle('學生編班資料');
+
+
+        $filename = $semester_year."_".$school->code."_".date('Ymd')."_OK";
+        // 設定 HTTP 標頭，強制瀏覽器下載文件
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment;filename="'.$filename.'.xlsx"');
+        header('Cache-Control: max-age=0');
+        header('Cache-Control: max-age=1'); // IE支援
+
+        // 建立 Xlsx 寫入器並輸出
+        $writer = new Xlsx($spreadsheet);
+        $writer->save('php://output'); // 將文件輸出到瀏覽器
+
+        $event = "是管理者，他下載了 ".$school->name." 班級學生編班資料。";                
+        logging($event,$school->code,get_ip());
+
+        exit;
     }
 
     public function edit_student(Student $student){
@@ -1033,7 +1158,11 @@ class SchoolController extends Controller
             foreach($new_class as $k=>$v){
                 $class_boy_num = count($v['boy']);
                 $class_num = count($v['boy'])+count($v['girl']);
-                $class_boy_average = round($class_boy_num/$class_num,2);
+                if($class_num==0){
+                    $class_boy_average = 0.5;
+                }else{
+                    $class_boy_average = round($class_boy_num/$class_num,2);
+                }                
                 if($class_boy_average > $boy_average){
                     // 隨機選取一個鍵
                     //先排女生
