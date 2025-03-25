@@ -105,6 +105,19 @@ class SchoolController extends Controller
         $one = [];
         $all = [];
         $error_id_number = null;
+        //檢查同一檔內有無相同身分證
+        foreach($xlsx_data as $k=>$row){
+            if($k > 2){
+                $check_ID[$row[4]] = $row[5];
+            }            
+        }        
+        $valuesCount = array_count_values($check_ID);
+        foreach ($valuesCount as $value => $count) {
+            if ($count > 1) {
+                return back()->withErrors(['errors' => ['錯誤：身分證「'.$value.'」有出現重複，所以中止上傳！']]);
+            }
+        }
+
         foreach($xlsx_data as $k=>$row){
             foreach($row as $col){
                 if($k==0){
