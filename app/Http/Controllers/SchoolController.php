@@ -108,7 +108,7 @@ class SchoolController extends Controller
         //檢查同一檔內有無相同身分證
         foreach($xlsx_data as $k=>$row){
             if($k > 2){
-                $check_ID[$row[4]] = $row[5];
+                $check_ID[] = $row[5];
             }            
         }        
         $valuesCount = array_count_values($check_ID);
