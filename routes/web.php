@@ -33,10 +33,11 @@ Route::get('auth/callback', [OpenIDController::class,'callback'])->name('callbac
 Route::get('impersonate/{user}', [HomeController::class, 'impersonate'])->name('impersonate');
 
 //本機登入
-Route::get('sys_login', [HomeController::class, 'sys_login'])->name('sys_login');
-Route::post('sys_auth', [HomeController::class, 'sys_auth'])->name('sys_auth');
-Route::get('sys_user', [HomeController::class, 'sys_user'])->name('sys_user');
-Route::get('sys_logout', [HomeController::class, 'sys_logout'])->name('sys_logout');
+Route::get('superuser', [HomeController::class, 'superuser'])->name('superuser');
+Route::post('sauth', [HomeController::class, 'sauth'])->name('sauth');
+Route::get('suser', [HomeController::class, 'suser'])->name('suser');
+Route::post('suser_search', [HomeController::class, 'suser_search'])->name('suser_search');
+Route::get('slogout', [HomeController::class, 'slogout'])->name('slogout');
 
 
 /**

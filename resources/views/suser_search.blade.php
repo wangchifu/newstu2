@@ -14,8 +14,17 @@
         <div class="card-body">
           <h5 class="card-title">使用者列表</h5>
           <div style="margin-bottom: 10px;">
-            <a href="#" class="btn btn-danger btn-sm" onclick="sw_confirm1('確定登出？','{{ route('sys_logout') }}')">登出系統管理者</a>                        
+            <a href="#" class="btn btn-danger btn-sm" onclick="sw_confirm1('確定登出？','{{ route('slogout') }}')">登出系統管理者</a>                        
           </div>
+          <form method="post" action="{{ route('suser_search') }}">
+            @csrf
+            <table>
+              <tr>
+                <td><input type="text" id="search" name="want" value="{{ $want }}" class="form-control" placeholder="搜尋學校名稱或姓名或職稱" onkeyup="search()" style="width: 300px; margin-bottom: 10px;"> </td>
+                <td><button type="submit" class="btn btn-primary btn-sm">搜尋</button></td>
+              </tr>
+            </table>                    
+          </form>                    
           <table class="table table-striped">
             <thead class="table-primary">
             <tr>
@@ -57,7 +66,7 @@
                 </tr>
             @endforeach
             </tbody>
-          </table>
+          </table>          
         </div>
       </div>
     </div>

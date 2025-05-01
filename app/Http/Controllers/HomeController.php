@@ -60,11 +60,11 @@ class HomeController extends Controller
         imagedestroy($im);
     }
 
-    public function sys_login(){
-        return view('auth.sys_login');
+    public function superuser(){
+        return view('auth.superuser');
     }
 
-    public function sys_auth(Request $request){
+    public function sauth(Request $request){
         if ($request->input('chaptcha') != session('chaptcha')) {
             return back()->withErrors(['error' => '驗證碼錯誤']);
         }
@@ -76,28 +76,46 @@ class HomeController extends Controller
         $password = $request->input('password');
         if (Hash::check($password, env('ADMIN_PWD'))) {
             session(['system_admin' => true]);
-            return redirect()->route('sys_user');
+            return redirect()->route('suser');
         } else {
             return back()->withErrors(['error' => '密碼錯誤']);
         }
     }
 
-    public function sys_logout()
+    public function slogout()
     {
         session(['system_admin' => null]);
         return redirect()->route('index');
     }
 
-    public function sys_user()
+    public function suser()
     {
         if (session('system_admin') <> true) {
             return redirect()->back();
         }
-        $users = User::all();
+        $users = User::orderBy('id', 'desc')->paginate('20');
         $data = [
             'users' => $users,
         ];
-        return view('sys_user', $data);
+        return view('suser', $data);
+    }
+
+    public function suser_search(Request $request)
+    {        
+        if (session('system_admin') <> true) {
+            return redirect()->back();
+        }        
+        $schools = School::where('name','like','%'.$request->input('want').'%')->get();
+        $school_ids = [];
+        foreach($schools as $school){
+            $school_ids[] = $school->id;
+        }        
+        $users = User::where('title','like','%'.$request->input('want').'%')->orWhere('name','like','%'.$request->input('want').'%')->orWhere(function($query) use($school_ids){ $query->whereIn('school_id', $school_ids);})->orderBy('id', 'desc')->get();
+        $data = [
+            'users' => $users,
+            'want' => $request->input('want'),
+        ];
+        return view('suser_search', $data);
     }
 
     public function impersonate(User $user)
