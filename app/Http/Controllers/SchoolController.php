@@ -1148,7 +1148,11 @@ class SchoolController extends Controller
             for($i=$v['count'];$i<$big_class;$i++){
                 $class_boy_num = count($v['boy']);
                 $class_num = count($v['boy'])+count($v['girl']);
-                $class_boy_average = round($class_boy_num/$class_num,2);
+                if($class_num==0){
+                    $class_boy_average = 0.5; 
+                }else{
+                    $class_boy_average = round($class_boy_num/$class_num,2); 
+                }                
                 if($class_boy_average > $boy_average){
                     // 隨機選取一個鍵
                     $randomKey = array_rand($girl);
