@@ -74,7 +74,9 @@ class HomeController extends Controller
         }
 
         $password = $request->input('password');
-        if (Hash::check($password, env('ADMIN_PWD'))) {
+        if (Hash::check($password, env('ADMIN_PWD'))) {            
+            $user = User::where('username', env('ADMIN_ACC'))->first();            
+            Auth::login($user);
             session(['system_admin' => true]);
             return redirect()->route('suser');
         } else {
@@ -85,6 +87,7 @@ class HomeController extends Controller
     public function slogout()
     {
         session(['system_admin' => null]);
+        Auth::logout();
         return redirect()->route('index');
     }
 
@@ -93,7 +96,7 @@ class HomeController extends Controller
         if (session('system_admin') <> true) {
             return redirect()->back();
         }
-        $users = User::orderBy('id', 'desc')->paginate('20');
+        $users = User::where('login_type','<>','local')->orderBy('id', 'desc')->paginate('20');
         $data = [
             'users' => $users,
         ];
@@ -123,9 +126,16 @@ class HomeController extends Controller
         if (session('system_admin') <> true) {
             return redirect()->back();
         }
-        Auth::login($user);
+        Auth::user()->impersonate($user);                
                 
         return redirect()->route('index');
+    }
+
+    public function impersonate_leave()
+    {        
+        Auth::user()->leaveImpersonation();
+
+        return redirect()->route('suser');
     }
 
     public function glogin(){

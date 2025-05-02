@@ -12,7 +12,7 @@
     <div class="col-lg-12">
       <div class="card">
         <div class="card-body">
-          <h5 class="card-title">使用者列表</h5>
+          <h5 class="card-title">使用者列表</h5> 
           <div style="margin-bottom: 10px;">
             <a href="#" class="btn btn-danger btn-sm" onclick="sw_confirm1('確定登出？','{{ route('slogout') }}')">登出系統管理者</a>                        
           </div>

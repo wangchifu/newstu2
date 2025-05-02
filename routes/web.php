@@ -54,6 +54,8 @@ Route::middleware([
 Route::group(['middleware' => 'auth'], function () {
 #登出
 Route::post('glogin', [HomeController::class, 'logout'])->name('logout');
+//結束摸擬
+Route::get('impersonate_leave', [HomeController::class, 'impersonate_leave'])->name('impersonate_leave');
 
 Route::get('upload_students/{semester_year?}', [SchoolController::class, 'upload_students'])->name('upload_students');
 Route::post('import_excel', [SchoolController::class, 'import_excel'])->name('import_excel');

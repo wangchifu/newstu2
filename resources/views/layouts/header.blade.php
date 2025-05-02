@@ -65,7 +65,15 @@
                 <i class="bi bi-eye"></i>
                 <span>操作記錄</span>
               </a>
-            </li>          
+            </li>       
+            @impersonating
+              <li>
+                <a class="dropdown-item d-flex align-items-center" href="#!" onclick="sw_confirm1('確定結束模擬？','{{ route('impersonate_leave') }}')">
+                  <i class="bi bi-android"></i>                  
+                  <span>結束模擬</span>
+                </a>
+              </li>      
+            @endImpersonating   
             <li>
               <a class="dropdown-item d-flex align-items-center" href="#" onclick="sw_confirm2('確定登出嗎？','logout_form')">
                 <i class="bi bi-box-arrow-right"></i>
