@@ -187,6 +187,7 @@ class SchoolController extends Controller
 
         //填上班級數(有些學校不會送老師)
         $att_class['class_num'] =$class_num;
+        $att2['situation'] = null;
         $school = School::where('code',auth()->user()->school->code)->first();
         $school->update($att_class);
 
@@ -1365,10 +1366,10 @@ class SchoolController extends Controller
         }
         */
 
-        $att2['situation'] = 1;
-        $school->update($att2);
+        //$att2['situation'] = 1;測試不用記錄
+        //$school->update($att2);測試不用記錄
         
-        $event = "是管理者，他為 ".$school->name." 編了學生的班級。";                
+        //$event = "是管理者，他為 ".$school->name." 編了學生的班級。";                
         //測試不用記錄
         //logging($event,$school->code,get_ip());     
 
@@ -1543,7 +1544,7 @@ class SchoolController extends Controller
         END
         WHERE id IN (".$ids.")");  
         
-        $event = "是管理者，他為 ".$school->name." 編了班級的導師。";                
+        //$event = "是管理者，他為 ".$school->name." 編了班級的導師。";                
         //測試不記錄
         //logging($event,$school->code,get_ip());  
 
@@ -1610,7 +1611,7 @@ class SchoolController extends Controller
         END
         WHERE id IN (".$ids.")");  
 
-        $event = "是管理者，他為 ".$school->name." 重新排了班級順序。";                
+        //$event = "是管理者，他為 ".$school->name." 重新排了班級順序。";                
         //測試不記錄
         //logging($event,$school->code,get_ip());  
 
@@ -1679,7 +1680,7 @@ class SchoolController extends Controller
             */
         }
         //dd($student_data);
-        $event = "是管理者，他列印了 ".$school->name." 班級學生編班資料。";                
+        //$event = "是管理者，他列印了 ".$school->name." 班級學生編班資料。";                
         //測試不記錄
         //logging($event,$school->code,get_ip());
 
@@ -1728,7 +1729,7 @@ class SchoolController extends Controller
             */
         }
         //dd($student_data);
-        $event = "是管理者，他列印了 ".$school->name." 班級學生編班資料。";                
+        //$event = "是管理者，他列印了 ".$school->name." 班級學生編班資料。";                
         //測試不記錄
         //logging($event,$school->code,get_ip());
 
