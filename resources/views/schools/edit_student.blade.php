@@ -47,7 +47,13 @@
                 特殊生可減1~3人，並記得綁定導師名單。多胞胎記得填上兄弟姐妹的流水號。父母剛好是一年級導師，記得標註以避掉教自己小孩。
               </p>
               <form action="{{ route('update_student',$student->id) }}" method="post" id="student_data">
-                @csrf              
+                @csrf    
+              <div class="row">
+                <label class="col-sm-2 col-form-label text-danger">姓名</label>
+                <div class="col-sm-10">
+                  <input class="form-control" text="text" name="name" value="{{ $student->name }}" placeholder="姓名" required>                  
+                </div>
+              </div>          
               <div class="row">
                 <label class="col-sm-2 col-form-label text-danger">身分別</label>
                 <div class="col-sm-10">

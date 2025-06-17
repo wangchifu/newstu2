@@ -521,6 +521,11 @@ class SchoolController extends Controller
             $att['another_no'] = null; 
             $att['type']=0;
         }
+
+        $att['name'] = $request->input('name');
+        if(empty($att['name'])){
+            return back()->withErrors(['errors' => ['錯誤：姓名不得為空！']]);
+        }        
         
         $student->update($att);
 
@@ -976,27 +981,27 @@ class SchoolController extends Controller
         shuffle($new_class);
         
         //取最多人數的班
-        $big_class = 0;
-        foreach($new_class as $k=>$v){
-            if($v['count'] > $big_class){
-                $big_class= $v['count'];
-            }
-        }
+        //$big_class = 0;
+        //foreach($new_class as $k=>$v){
+        //    if($v['count'] > $big_class){
+        //        $big_class= $v['count'];
+        //    }
+        //}
 
-        //先補男生讓各班人數一致
-        foreach($new_class as $k=>$v){
-            for($i=$v['count'];$i<$big_class;$i++){
-                // 隨機選取一個鍵
-                $randomKey = array_rand($boy);
-                // 使用鍵來獲取對應的值
-                $randomValue = $boy[$randomKey];
-                $new_class[$k]['boy'][$randomKey] = $randomValue;
-                $new_class[$k]['count']++;
-                unset($boy[$randomKey]);
-            }
-        }
+        //先補男生讓各班人數一致 會不小必取到雙胞或三胞胎
+        //foreach($new_class as $k=>$v){
+        //    for($i=$v['count'];$i<$big_class;$i++){
+        //        // 隨機選取一個鍵
+        //        $randomKey = array_rand($boy);
+        //        // 使用鍵來獲取對應的值
+        //        $randomValue = $boy[$randomKey];
+        //        $new_class[$k]['boy'][$randomKey] = $randomValue;
+        //        $new_class[$k]['count']++;
+        //        unset($boy[$randomKey]);
+        //    }
+        //}
         //再打亂一次
-        shuffle($new_class);
+        //shuffle($new_class);
         
         //抽雙胞胎同班
         if(!empty($bao2)){
