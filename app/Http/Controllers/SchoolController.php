@@ -478,7 +478,8 @@ class SchoolController extends Controller
             if($att['subtract'] > 0){
 
             }else{
-                return back()->withErrors(['errors' => ['錯誤：特殊生設定有問題！']]);
+                //也有可能特殊生沒有減人數
+                //return back()->withErrors(['errors' => ['錯誤：特殊生設定有問題！']]);
             }
         }
 

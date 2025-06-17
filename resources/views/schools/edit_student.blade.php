@@ -51,7 +51,7 @@
               <div class="row">
                 <label class="col-sm-2 col-form-label text-danger">身分別</label>
                 <div class="col-sm-10">
-                  <select class="form-select" aria-label="Default select example" name="special">
+                  <select class="form-select" aria-label="Default select example" name="special" id="special">
                     <?php 
                       $select0 = ($student->special)?null:"selected";  
                       $select1 = ($student->special)?"selected":null;
@@ -65,7 +65,7 @@
               <div class="row">
                 <label class="col-sm-2 col-form-label text-danger">特殊生減人數</label>
                 <div class="col-sm-10">
-                  <select class="form-select" aria-label="Default select example" name="subtract">
+                  <select class="form-select" aria-label="Default select example" name="subtract" id="subtract">
                     <?php 
                       if($student->subtract==0){
                         $select0 = "selected";
@@ -92,7 +92,7 @@
                         $select3 = "selected";
                       }
                     ?>
-                    <option value="0" {{ $select0 }}>--</option></option>
+                    <option value="0" {{ $select0 }}>0人</option></option>
                     <option value="1" {{ $select1 }}>1人</option></option>
                     <option value="2" {{ $select2 }}>2人</option></option>
                     <option value="3" {{ $select3 }}>3人</option></option>                 
@@ -208,4 +208,29 @@
     </div>
   </div>
 </section>
+<script
+			  src="https://code.jquery.com/jquery-3.7.1.min.js"
+			  integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo="
+			  crossorigin="anonymous"></script>
+<script>
+  $(document).ready(function(){
+    function checkCondition() {
+        var specialVal = $('#special').val();
+        var subtractVal = $('#subtract').val();
+
+        if (specialVal == '1' && subtractVal == '0') {
+            sw_alert("操作確定","確定特殊生不減任何人？", "warning");
+            $('#subtract').focus();
+        }
+    }
+
+    // 當任一 select 改變時就檢查
+    $('#special, #subtract').on('change', function(){
+        checkCondition();
+    });
+
+    // 頁面載入時先檢查一次 (依需要)
+    checkCondition();
+});
+</script>
 @endsection
