@@ -134,15 +134,14 @@ class OpenIDController extends Controller
             }
 
             //是否已有此帳號
-            $school = School::where('code',$user_obj['code'])->first();
-            if(empty($school)){
-                    return redirect()->route('glogin')->withErrors(['errors' => ['貴校不在系統內']]);
-                }
-            $user = User::where('personid', $user_obj['personid'])        
-                ->where('school_id', $school->id)                            
+            $user = User::where('personid', $user_obj['personid'])                
                 ->first();
 
-            if (empty($user)) {                                
+            if (empty($user)) {
+                $school = School::where('code',$user_obj['code'])->first();
+                if(empty($school)){
+                    return redirect()->route('glogin')->withErrors(['errors' => ['貴校不在系統內']]);
+                }
                 $att['name'] = $user_obj['name'];
                 $att['title'] = $user_obj['title']; 
                 $att['personid'] = $user_obj['personid'];
