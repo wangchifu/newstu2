@@ -194,7 +194,7 @@
                   @if(!$ready==1)
                     <td>
                       <a href="{{ route('edit_student',$k1) }}" class="btn btn-outline-primary">修改</a>
-                      <a href="#!" class="btn btn-outline-danger" onclick="sw_confirm1('確定刪除 {{ $v1['name'] }} ？','{{ route('delete_student',$k1) }}')">刪除</a>
+                      <a href="#!" class="btn btn-outline-danger" onclick="sw_confirm1('確定刪除 {{ $v1['name'] }} ？記得在校務系統也要在「新生作業」將此生標記「不就讀」喔！','{{ route('delete_student',$k1) }}')">刪除</a>
                     </td>
                   @endif
                 </tr>

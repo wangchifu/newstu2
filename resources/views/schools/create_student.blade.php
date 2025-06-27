@@ -132,7 +132,7 @@
               <hr>
               @include('layouts.errors')
               <a href="{{ route('student_type') }}" class="btn btn-secondary"><i class="bi bi-chevron-double-left"></i> 返回</a>
-              <a href="#!" class="btn btn-primary" onclick="sw_confirm2('確定？','student_data')"><i class="bi bi-arrow-right-circle-fill"></i> 確定新增</a>
+              <a href="#!" class="btn btn-primary" onclick="sw_confirm2('確定？記得在校務系統也要在「新生作業」「新增」此生喔！','student_data')"><i class="bi bi-arrow-right-circle-fill"></i> 確定新增</a>
               </form>
         </div>
       </div>
