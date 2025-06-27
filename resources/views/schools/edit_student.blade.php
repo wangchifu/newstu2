@@ -205,7 +205,7 @@
               </div>
               <hr>
               @include('layouts.errors')
-              <a href="#" class="btn btn-secondary" onclick="history.back ();"><i class="bi bi-chevron-double-left"></i> 返回</a>
+              <a href="{{ route('student_type') }}" class="btn btn-secondary"><i class="bi bi-chevron-double-left"></i> 返回</a>
               <a href="#" class="btn btn-primary" onclick="sw_confirm2('確定？','student_data')"><i class="bi bi-arrow-right-circle-fill"></i> 確定修改</a>
               </form>
         </div>

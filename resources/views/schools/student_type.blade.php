@@ -77,12 +77,21 @@
         </table>        
         <hr>
         @if(!$ready==1)
-          <form action="{{ route('school_ready') }}" method="post" id="go_send">
-            @csrf
-            <input type="hidden" name="semester_year" value="{{ $semester_year }}">
-            @include('layouts.errors')
-            <a href="#" class="btn btn-primary" onclick="sw_confirm2('上傳編班中心不能再更改了喔！','go_send')"><i class="bi bi-arrow-right-circle-fill"></i> 確定送出不再修改</a>
-          </form>
+          <table>
+            <tr>
+              <td>
+                <a href="{{ route('create_student') }}" class="btn btn-outline-success">新增學生</a>
+              </td>
+              <td>
+                <form action="{{ route('school_ready') }}" method="post" id="go_send">
+                  @csrf
+                  <input type="hidden" name="semester_year" value="{{ $semester_year }}">
+                  @include('layouts.errors')            
+                  <a href="#" class="btn btn-primary" onclick="sw_confirm2('上傳編班中心不能再更改了喔！','go_send')"><i class="bi bi-arrow-right-circle-fill"></i> 確定送出不再修改</a>
+                </form>
+              </td>
+            </tr>
+          </table>                  
         @else          
           @if(!empty(auth()->user()->school->situation))
             <p><span class="text-success">**編班完成**</span></p>
@@ -185,6 +194,7 @@
                   @if(!$ready==1)
                     <td>
                       <a href="{{ route('edit_student',$k1) }}" class="btn btn-outline-primary">修改</a>
+                      <a href="#!" class="btn btn-outline-danger" onclick="sw_confirm1('確定刪除 {{ $v1['name'] }} ？','{{ route('delete_student',$k1) }}')">刪除</a>
                     </td>
                   @endif
                 </tr>

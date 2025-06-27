@@ -62,8 +62,11 @@ Route::post('import_excel', [SchoolController::class, 'import_excel'])->name('im
 Route::get('student_type/{semester_year?}', [SchoolController::class, 'student_type'])->name('student_type');
 Route::get('school_show_class/{school}', [SchoolController::class, 'school_show_class'])->name('school_show_class');
 Route::get('school_export/{school}', [SchoolController::class, 'school_export'])->name('school_export');
+Route::get('create_student', [SchoolController::class, 'create_student'])->name('create_student');
 Route::get('edit_student/{student}', [SchoolController::class, 'edit_student'])->name('edit_student');
+Route::get('delete_student/{student}', [SchoolController::class, 'delete_student'])->name('delete_student');
 Route::post('update_student/{student}', [SchoolController::class, 'update_student'])->name('update_student');
+Route::post('store_student', [SchoolController::class, 'store_student'])->name('store_student');
 Route::post('school_ready', [SchoolController::class, 'school_ready'])->name('school_ready');
 Route::get('school_log', [SchoolController::class, 'school_log'])->name('school_log');
 Route::get('test_start', [SchoolController::class, 'test_start'])->name('test_start');

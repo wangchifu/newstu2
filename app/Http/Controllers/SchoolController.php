@@ -446,6 +446,114 @@ class SchoolController extends Controller
         exit;
     }
 
+    public function create_student(){
+
+        //已經 ready 不能再增加
+        $school = School::where('code',auth()->user()->school->code)->first();  
+        if($school->ready==1){
+            return back();
+        }
+
+        $semester_year = date('Y') - 1911;;
+        $teachers = Teacher::where('code',auth()->user()->school->code)        
+        ->where('semester_year',$semester_year)
+        ->get();
+        $data = [            
+            'teachers'=>$teachers,
+        ];
+        return view('schools.create_student',$data);
+    }  
+
+    public function store_student(Request $request){
+        $att = $request->all();
+        $att['code'] = auth()->user()->school->code;
+        $att['semester_year'] = date('Y') - 1911;
+        if($att['name']==null or $att['no']==null or $att['id_number']==null){
+            return back()->withErrors(['errors' => ['錯誤：流水號或姓名或身分證未填！']]);
+        }
+        //dd($att);
+        $check_student = Student::where('code',auth()->user()->school->code)
+        ->where('semester_year',$att['semester_year'])
+        ->where('no',$att['no'])
+        ->first();
+        if(!empty($check_student)){
+            return back()->withErrors(['errors' => ['錯誤：流水號 '.$att['no'].' 已經存在！']]);
+        }
+
+        $check_student = Student::where('id_number',$att['id_number'])
+        ->first();
+        if(!empty($check_student)){
+            return back()->withErrors(['errors' => ['錯誤：身分證 '.$att['id_number'].' 已經存在！']]);
+        }
+
+        if($att['special']==null){
+            if( $att['subtract'] == 0 and $att['with_teacher'] == null){            
+            }else{
+                return back()->withErrors(['errors' => ['錯誤：一般生設定有問題！']]);
+            }
+            
+        }elseif($att['special']==1){            
+            //if($att['subtract'] > 0 and $att['with_teacher'] != null){  暫時不檢查綁老師
+            if($att['subtract'] > 0){
+
+            }else{
+                //也有可能特殊生沒有減人數
+                //return back()->withErrors(['errors' => ['錯誤：特殊生設定有問題！']]);
+            }
+        }
+
+        if($att['type']==2 or $att['type']==3){
+            if($att['bao1'] != null and $att['bao2'] == null){
+
+            }else{
+                return back()->withErrors(['errors' => ['錯誤：雙胞胎設定有問題！']]);
+            }
+        }
+
+        if($att['type']==4 or $att['type']==5){
+            if($att['bao1'] != null and $att['bao2'] != null){
+
+            }else{
+                return back()->withErrors(['errors' => ['錯誤：三胞胎設定有問題！']]);
+            }
+        }
+
+        if($att['type']==2 or $att['type']==3){
+            $att['another_no'] = $att['bao1'];
+        }
+        
+
+        if($att['type']==4 or $att['type']==5){
+            $att['another_no'] = $att['bao1'].",".$att['bao2'];
+        }
+
+        //沒有多胞胎 不要動 type
+        if($att['type'] == "no"){
+            unset($att['type']);
+        }
+        //特殊生而且不是多胞就改 type 為 1
+        if($att['special']==1 and !isset($att['type'])){
+            $att['type']=1;
+        }
+        //一般生而且不是多胞就改 type 為 
+        if($att['special']==null and !isset($att['type'])){
+            $att['another_no'] = null; 
+            $att['type']=0;
+        }
+
+        $att['name'] = $request->input('name');
+        if(empty($att['name'])){
+            return back()->withErrors(['errors' => ['錯誤：姓名不得為空！']]);
+        }        
+        
+        $student = Student::create($att);
+
+        //記錄
+        $event = "新增了學生 ".$student->name." 的個人資料設定。";
+        logging($event,auth()->user()->school->code,get_ip());
+        return redirect()->route('student_type');
+    }
+
     public function edit_student(Student $student){
 
         //已經 ready 不能再修改
@@ -462,7 +570,7 @@ class SchoolController extends Controller
             'teachers'=>$teachers,
         ];
         return view('schools.edit_student',$data);
-    }
+    }    
 
     public function update_student(Request $request,Student $student){
         $att = $request->all();
@@ -533,6 +641,16 @@ class SchoolController extends Controller
         $event = "修改了學生 ".$student->name." 的個人資料設定。";
         logging($event,auth()->user()->school->code,get_ip());
         return redirect()->route('student_type');
+    }
+
+    public function delete_student(Student $student){
+        //已經 ready 不能再刪除
+        $school = School::where('code',auth()->user()->school->code)->first();  
+        if($school->ready==1){
+            return back();
+        }
+        $student->delete();
+        return back();
     }
 
     public function school_ready(Request $request){
