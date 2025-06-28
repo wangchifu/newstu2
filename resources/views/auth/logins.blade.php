@@ -29,8 +29,12 @@
                 <img src="{{ asset('img/chc.jpg') }}" alt="彰化chc的logo" width="120">
               </a>
               <br>OpenID登入
-            </div>        
-          </div>
+            </div>     
+            <div class="text-center mt-3">
+              <a href="https://eip.chc.edu.tw/recovery-password" target="_blank" class="btn btn-warning">
+                忘記密碼？
+              </a>              
+            </div>
         </div>
 
         <div class="credits">
