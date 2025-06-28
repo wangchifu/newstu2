@@ -142,6 +142,10 @@ class HomeController extends Controller
         return view('auth.glogin');
     }
 
+    public function logins(){
+        return view('auth.logins');
+    }
+
     public function logout(){
         Auth::logout();
         return redirect()->route('index');

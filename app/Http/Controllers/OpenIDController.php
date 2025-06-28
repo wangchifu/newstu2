@@ -117,11 +117,11 @@ class OpenIDController extends Controller
       $user_obj['name'] = $userinfo['name'];      
       $user_obj['personid'] = $profile['personid'];
       $user_obj['code'] = $edufile['schoolid'];
-      $user_obj['kind'] = $edufile['titles'][0]['titles'][0];    
+      $user_obj['kind'] = $edufile['titles'][0]['titles'][1];    
       if ($user_obj['kind'] == "學生") {
         return redirect()->route('glogin')->withErrors(['errors' => ['學生禁止進入']]);
       }  
-      $user_obj['title'] = $edufile['titles'][0]['titles'][1];
+      $user_obj['title'] = $edufile['titles'][0]['titles'][0];
 
         //學生禁止訪問
         if ($user_obj['success']) {

@@ -88,7 +88,7 @@
         </li><!-- End Profile Nav -->
         @endauth
         @guest
-          <a class="nav-link nav-profile d-flex align-items-center pe-0" href="{{ route('glogin') }}">            
+          <a class="nav-link nav-profile d-flex align-items-center pe-0" href="{{ route('logins') }}">            
             <span class="d-none d-md-block ps-2">登入</span>
           </a>
         @endguest
