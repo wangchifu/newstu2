@@ -87,10 +87,10 @@
           </ul><!-- End Profile Dropdown Items -->
         </li><!-- End Profile Nav -->
         @endauth
-        @guest
-          <a class="nav-link nav-profile d-flex align-items-center pe-0" href="{{ route('logins') }}">            
+        @guest                          
+          <a class="nav-link nav-profile d-flex align-items-center pe-0" href="{{ route('glogin') }}">            
             <span class="d-none d-md-block ps-2">登入</span>
-          </a>
+          </a>          
         @endguest
       </ul>
     </nav><!-- End Icons Navigation -->
