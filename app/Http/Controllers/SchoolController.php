@@ -1622,13 +1622,10 @@ class SchoolController extends Controller
             foreach($att['without_teacher'] as $k=>$v){
                 //如果指定不可以的老師的那班  已經先分了老師
                 if(!empty($class_teacher[$k])){
-
                 }else{
                     $v = substr($v,0,-1);                         
-                    $without_teacher = explode(",",$v);        
-                    
-                    $new_teacher_array = array_diff($teacher_array,$without_teacher);    
-                    
+                    $without_teacher = explode(",",$v);                            
+                    $new_teacher_array = array_diff($teacher_array,$without_teacher);                        
                     //如果為空 返回不編
                     if(empty($new_teacher_array)){
                         return back()->withErrors(['errors' => ['錯誤！某師不可為某班導師']]);
