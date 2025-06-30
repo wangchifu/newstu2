@@ -1600,11 +1600,11 @@ class SchoolController extends Controller
         $teacher_array = [];
         foreach($teachers as $teacher){
             $teacher_array[$teacher->id] = $teacher->name;
-        }
-
+        }        
         $att = $request->all();
         $assign_teacher = $att['teacher'];     
                 
+        
         //先把指定的老師分下去
         foreach($assign_teacher as $k=>$v){
             if($v <> 0){
@@ -1612,27 +1612,33 @@ class SchoolController extends Controller
                 unset($teacher_array[$v]);
                 unset($assign_teacher[$k]);
             }            
-        }
-                
-    
+        }                
         //如果還有沒指定的
         if(!empty($teacher_array)){
             //再分指定不可以的老師
             $without_teacher = [];      
-            if(!isset($att['without_teacher'])) $att['without_teacher'] = [];
+            if(!isset($att['without_teacher'])) $att['without_teacher'] = [];   
+            
             foreach($att['without_teacher'] as $k=>$v){
-                $v = substr($v,0,-1);            
-                $without_teacher = explode(",",$v);                
-                $new_teacher_array = array_diff($teacher_array,$without_teacher);    
-                //如果為空 返回不編
-                if(empty($new_teacher_array)){
-                    return back()->withErrors(['errors' => ['錯誤！某師不可為某班導師']]);
-                }
-                $teacher_id = array_rand($new_teacher_array);            
-                $class_teacher[$k] = (string)$teacher_id;                
-                unset($teacher_array[$teacher_id]);                        
-                unset($assign_teacher[$k]);
-            }             
+                //如果指定不可以的老師的那班  已經先分了老師
+                if(!empty($class_teacher[$k])){
+
+                }else{
+                    $v = substr($v,0,-1);                         
+                    $without_teacher = explode(",",$v);        
+                    
+                    $new_teacher_array = array_diff($teacher_array,$without_teacher);    
+                    
+                    //如果為空 返回不編
+                    if(empty($new_teacher_array)){
+                        return back()->withErrors(['errors' => ['錯誤！某師不可為某班導師']]);
+                    }
+                    $teacher_id = array_rand($new_teacher_array);            
+                    $class_teacher[$k] = (string)$teacher_id;                
+                    unset($teacher_array[$teacher_id]);                        
+                    unset($assign_teacher[$k]);
+                }                
+            }                  
         
             //最後分亂數
             foreach($assign_teacher as $k=>$v){
