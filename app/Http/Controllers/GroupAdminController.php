@@ -1155,14 +1155,14 @@ class GroupAdminController extends Controller
         $ids = "";
         $string1 = "";
         foreach($att['teacher'] as $k=>$v){
-            if($k <> $v){
+            //if($k <> $v){
                 $att2['class'] = $v;
                 foreach($students[$k] as $student){
                     $ids = $ids.$student->id.",";
                     $string1 = $string1." when id=".$student->id." then '".$att2['class']."'";                    
                     //$student->update($att2);
                 }                
-            }            
+            //}            
         }
         $ids = substr($ids,0,-1);
         //dd($ids);

@@ -445,8 +445,11 @@ class SchoolController extends Controller
 
     public function school_show_class(School $school){
         if($school->code != auth()->user()->school->code){
-            return back();    
-        }
+            if(auth()->user()->school->code == '074603' and $school->code == '074603-1'){                
+            }else{
+                return back();    
+            }            
+        } 
         $students = Student::where('code',$school->code)
             ->orderBy('class')->orderBy('num')->get();
                 
@@ -491,8 +494,11 @@ class SchoolController extends Controller
     
     public function school_export(School $school){
         if($school->code != auth()->user()->school->code){
-            return back();    
-        }        
+            if(auth()->user()->school->code == '074603' and $school->code == '074603-1'){                
+            }else{
+                return back();    
+            }            
+        }       
         $students = Student::where('code',$school->code)
             ->orderBy('class')->orderBy('num')->get();
         $teachers = Teacher::where('code',$school->code)->get();
@@ -1868,19 +1874,18 @@ class SchoolController extends Controller
         for($i=0;$i<$school->class_num;$i++){
             $students[$eng_class[$i]] = TestStudent::where('code',$school->code)->where('class',$eng_class[$i])->get();
         }
-        $att['teacher'] = $request->input('teacher');
-        
+        $att['teacher'] = $request->input('teacher');        
         $ids = "";
         $string1 = "";
         foreach($att['teacher'] as $k=>$v){
-            if($k <> $v){
+            //if($k <> $v){
                 $att2['class'] = $v;
                 foreach($students[$k] as $student){
                     $ids = $ids.$student->id.",";
                     $string1 = $string1." when id=".$student->id." then '".$att2['class']."'";                    
                     //$student->update($att2);
                 }                
-            }            
+            //}            
         }
         $ids = substr($ids,0,-1);
         //dd($ids);
