@@ -67,12 +67,17 @@ function chk_id_number($cardid) {
 }
 
 //檢查檔名
-function chk_file_format($file) {
+function chk_file_format($file,$jh_school) {
 	$chk='NO';
 	//if(ereg("^[0-9]{3}_[0-9]{6}_[0-9]{8}\.csv",$file))   $chk='OK';
 	//if(ereg("^[0-9]{3}_[0-9]{6}_[0-9]{8}\.csv",$file))   $chk='OK';
 	//if (preg_match("/^[0-9]{3}_[0-9]{6}_[0-9]{8}.csv/",$file))  $chk='OK';
-	$regex="/^[0-9]{3}_[0-9]{6}_[0-9]{8}.xlsx/";
+    if($jh_school==1){
+        //建和分校
+        $regex="/^[0-9]{3}_074603-1_[0-9]{8}.xlsx/";
+    }else{
+        $regex="/^[0-9]{3}_[0-9]{6}_[0-9]{8}.xlsx/";
+    }	
 	if (preg_match($regex,$file))  $chk='OK';
 	Return $chk;
 }

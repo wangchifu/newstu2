@@ -43,28 +43,70 @@ class SchoolController extends Controller
             $student_data[$student->semester_year][$student->id]['ps'] = $student->ps;
         }
         $school = School::where('code',auth()->user()->school->code)->first(); 
+
+        $semester_year2 = null;
+        $teacher2s = [];
+        $student_data2 = [];
+        $school2 = [];                
+        //如果是平和國小
+        if(auth()->user()->school->code=="074603"){        
+            $get_student = Student::where('code','074603-1')->orderBy('created_at','DESC')->first();
+            if(empty($semester_year2) and !empty($get_student)){            
+                $semester_year2 = $get_student->semester_year;
+            }   
+
+            $students = Student::where('code','074603-1')
+            ->where('semester_year',$semester_year2)
+            ->get();
+
+            $teacher2s = Teacher::where('code','074603-1')
+            ->where('semester_year',$semester_year2)
+            ->get();            
+            foreach($students as $student){
+                $student_data2[$student->semester_year][$student->id]['no'] = $student->no;
+                $student_data2[$student->semester_year][$student->id]['class'] = $student->class;
+                $student_data2[$student->semester_year][$student->id]['num'] = $student->num;
+                $student_data2[$student->semester_year][$student->id]['sex'] = $student->sex;
+                $student_data2[$student->semester_year][$student->id]['name'] = $student->name;
+                $student_data2[$student->semester_year][$student->id]['id_number'] = $student->id_number;
+                $student_data2[$student->semester_year][$student->id]['old_school'] = $student->old_school;
+                $student_data2[$student->semester_year][$student->id]['type'] = $student->type;
+                $student_data2[$student->semester_year][$student->id]['another_no'] = $student->another_no;
+                $student_data2[$student->semester_year][$student->id]['ps'] = $student->ps;
+            }
+            $school2 = School::where('code','074603-1')->first(); 
+        }        
+        
         $data = [
             'semester_year'=>$semester_year,
             'student_data'=>$student_data,
             'teachers'=>$teachers,
-            'ready'=>$school->ready,
-            'class_num'=>$school->class_num,
+            'school'=>$school,                        
+            'semester_year2'=>$semester_year2,
+            'student_data2'=>$student_data2,
+            'teacher2s'=>$teacher2s,
+            'school2'=>$school2,                        
         ];
         return view('schools.upload_students',$data);
     }
 
-    public function import_excel(Request $request){        
+    public function import_excel(Request $request){  
+        $jh_school = $request->input('jh_school',0);      
         //處理檔案上傳
         if ($request->hasFile('file')) {
             $file = $request->file('file');
             $file_name_array = explode('_',$file->getClientOriginalName());
 
-            if(chk_file_format($file->getClientOriginalName())=="NO"){
+            if(chk_file_format($file->getClientOriginalName(),$jh_school)=="NO"){
                 return back()->withErrors(['errors' => ['錯誤：檔案名稱不符合要求！']]);
+            }            
+            if($jh_school==1){
+                $code = '074603-1'; //建和分校
+            }else{
+                $code = auth()->user()->school->code; //其他學校
             }
-
             //先清空        
-            Student::where('code',auth()->user()->school->code)->delete();
+            Student::where('code',$code)->delete();
             //系統內已有的學生身分證            
             $all_students = Student::all();
             $all_student_array = [];
@@ -154,7 +196,7 @@ class SchoolController extends Controller
                     
     
                     $one = [
-                        'code' => auth()->user()->school->code,
+                        'code' => $code,
                         'semester_year' => $file_name_array[0],
                         'no' => $row[0],
                         'sex' => $row[3],
@@ -188,14 +230,14 @@ class SchoolController extends Controller
         //填上班級數(有些學校不會送老師)
         $att_class['class_num'] =$class_num;
         $att2['situation'] = null;
-        $school = School::where('code',auth()->user()->school->code)->first();
+        $school = School::where('code',$code)->first();
         $school->update($att_class);
 
         $one_teacher = [];
         $all_teacher = [];
         foreach($teacher_array as $k=>$v){
             $one_teacher = [
-                'code' => auth()->user()->school->code,
+                'code' => $code,
                 'semester_year' => $file_name_array[0],
                 'name' => $v,
                 'created_at' => now(),
@@ -204,15 +246,15 @@ class SchoolController extends Controller
             array_push($all_teacher, $one_teacher);
         }
         //先清空
-        Teacher::where('code',auth()->user()->school->code)->delete();
+        Teacher::where('code',$code)->delete();
         Teacher::insert($all_teacher);
         //記錄
         $event = "上傳了學生及導師名單。";
         logging($event,auth()->user()->school->code,get_ip());
-        return redirect()->route('upload_students');
+        return redirect()->back()->withErrors(['errors' => ['學生及導師名單已成功上傳！']]);
     }
 
-    public function student_type($semester_year=null){
+    public function student_type($semester_year=null){        
         $get_student = Student::where('code',auth()->user()->school->code)->orderBy('created_at','DESC')->first();
         if(empty($semester_year) and !empty($get_student)){            
             $semester_year = $get_student->semester_year;
@@ -279,17 +321,6 @@ class SchoolController extends Controller
                 $student_data[$student->semester_year][$student->id]['without_teacher'] = "";
             }
             
-           /**
-            if($student->special==1){
-                $special_student[$student->no] = $student->name;
-            }            
-            if($student->type==2){
-                $bao2_student[$student->no] = $student->name;
-            }
-            if($student->type==3){
-                $bao2_student[$student->no] = $student->name;
-            }
-            */
             if($student->special==null) $type[0]++;
             if($student->special==1) $type[1]++;
             if($student->type==2) $type[2]++;
