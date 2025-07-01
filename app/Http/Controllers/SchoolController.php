@@ -249,9 +249,9 @@ class SchoolController extends Controller
         Teacher::where('code',$code)->delete();
         Teacher::insert($all_teacher);
         //記錄
-        $event = "上傳了學生及導師名單。";
+        $event = "上傳了 ".$code." 學生及導師名單。";
         logging($event,auth()->user()->school->code,get_ip());
-        return redirect()->back()->withErrors(['errors' => ['學生及導師名單已成功上傳！']]);
+        return redirect()->back()->with('code', $code);
     }
 
     public function student_type($semester_year=null){        
@@ -330,7 +330,90 @@ class SchoolController extends Controller
             $subtract +=$student->subtract;
         }
 
-        $school = School::where('code',auth()->user()->school->code)->first();        
+        $school = School::where('code',auth()->user()->school->code)->first();  
+        
+        //如果是平和國小
+        if(auth()->user()->school->code=="074603"){ 
+            $semester_year2 = null;
+            $get_student = Student::where('code','074603-1')->orderBy('created_at','DESC')->first();
+            if(empty($semester_year2) and !empty($get_student)){            
+                $semester_year2 = $get_student->semester_year;
+            }
+            
+            $students = Student::where('code','074603-1')
+            ->where('semester_year',$semester_year)
+            ->get();
+            $teacher2s = Teacher::where('code','074603-1')
+            ->where('semester_year',$semester_year)
+            ->get();
+            $student_data2 = [];
+            $type2[0] = 0;
+            $type2[1] = 0;
+            $type2[2] = 0;
+            $type2[3] = 0;
+            $type2[4] = 0;
+            $type2[5] = 0;
+            $subtract2 = 0;
+            $spacial_student2 = [];
+            $bao2_same2 = [];
+            $bao2_not_same2 = [];
+            $bao3_same2 = [];
+            $bao3_not_same2 = [];
+            $with_out_teacher2 = [];
+            foreach($students as $student){
+                $student_data2[$student->semester_year][$student->id]['no'] = $student->no;
+                $student_data2[$student->semester_year][$student->id]['class'] = $student->class;
+                $student_data2[$student->semester_year][$student->id]['num'] = $student->num;
+                $student_data2[$student->semester_year][$student->id]['sex'] = $student->sex;
+                $student_data2[$student->semester_year][$student->id]['name'] = $student->name;
+                $student_data2[$student->semester_year][$student->id]['id_number'] = $student->id_number;
+                $student_data2[$student->semester_year][$student->id]['old_school'] = $student->old_school;
+                $student_data2[$student->semester_year][$student->id]['type'] = $student->type;
+                if($student->type==2){
+                    $bao2_same2[$student->id] = $student->name;
+                }
+                if($student->type==3){
+                    $bao2_not_same2[$student->id] = $student->name;
+                }
+                if($student->type==4){
+                    $bao3_same2[$student->id] = $student->name;
+                }
+                if($student->type==5){
+                    $bao3_not_same2[$student->id] = $student->name;
+                }
+                $student_data2[$student->semester_year][$student->id]['another_no'] = $student->another_no;
+                $student_data2[$student->semester_year][$student->id]['ps'] = $student->ps;
+                $student_data2[$student->semester_year][$student->id]['special'] = $student->special;
+                if($student->special==1){
+                    $spacial_student2[$student->id] = $student->name;                
+                }            
+                $student_data2[$student->semester_year][$student->id]['subtract'] = $student->subtract;
+                if(!empty($student->with_teacher)){
+                    $student_data2[$student->semester_year][$student->id]['with_teacher'] = $student->w_teacher->name;
+                }else{
+                    $student_data2[$student->semester_year][$student->id]['with_teacher'] = "";
+                }
+                if(!empty($student->without_teacher)){
+                    $student_data2[$student->semester_year][$student->id]['without_teacher'] = $student->wo_teacher->name;
+                    $with_out_teacher2[$student->id]['student'] = $student->name; 
+                    $with_out_teacher2[$student->id]['teacher'] = $student->wo_teacher->name; 
+                }else{
+                    $student_data2[$student->semester_year][$student->id]['without_teacher'] = "";
+                }
+                
+                if($student->special==null) $type2[0]++;
+                if($student->special==1) $type2[1]++;
+                if($student->type==2) $type2[2]++;
+                if($student->type==3) $type2[3]++;
+                if($student->type==4) $type2[4]++;
+                if($student->type==5) $type2[5]++;
+                $subtract2 +=$student->subtract;
+            }
+
+            $school2 = School::where('code','074603-1')->first();          
+        
+        }
+
         $data = [
             'semester_year'=>$semester_year,
             'student_data'=>$student_data,
@@ -343,7 +426,19 @@ class SchoolController extends Controller
             'bao3_same'=>$bao3_same,
             'bao3_not_same'=>$bao3_not_same,
             'with_out_teacher'=>$with_out_teacher,
-            'ready'=>$school->ready,
+            'school'=>$school,            
+            'semester_year2'=>$semester_year2,
+            'student_data2'=>$student_data2,
+            'teacher2s'=>$teacher2s,
+            'type2'=>$type2,
+            'subtract2'=>$subtract2,
+            'spacial_student2'=>$spacial_student2,
+            'bao2_same2'=>$bao2_same2,
+            'bao2_not_same2'=>$bao2_not_same2,
+            'bao3_same2'=>$bao3_same2,
+            'bao3_not_same2'=>$bao3_not_same2,
+            'with_out_teacher2'=>$with_out_teacher2,
+            'school2'=>$school2,
         ];
         return view('schools.student_type',$data);
     }
@@ -477,33 +572,35 @@ class SchoolController extends Controller
         exit;
     }
 
-    public function create_student(){
-
+    public function create_student($code=null){
+        if(empty($code)){
+            $code = auth()->user()->school->code;
+        }
         //已經 ready 不能再增加
-        $school = School::where('code',auth()->user()->school->code)->first();  
+        $school = School::where('code',$code)->first();  
         if($school->ready==1){
             return back();
         }
 
         $semester_year = date('Y') - 1911;;
-        $teachers = Teacher::where('code',auth()->user()->school->code)        
+        $teachers = Teacher::where('code',$code)        
         ->where('semester_year',$semester_year)
         ->get();
         $data = [            
             'teachers'=>$teachers,
+            'code'=>$code,
         ];
         return view('schools.create_student',$data);
     }  
 
     public function store_student(Request $request){
-        $att = $request->all();
-        $att['code'] = auth()->user()->school->code;
+        $att = $request->all();        
         $att['semester_year'] = date('Y') - 1911;
         if($att['name']==null or $att['no']==null or $att['id_number']==null){
             return back()->withErrors(['errors' => ['錯誤：流水號或姓名或身分證未填！']]);
         }
         //dd($att);
-        $check_student = Student::where('code',auth()->user()->school->code)
+        $check_student = Student::where('code',$att['code'])
         ->where('semester_year',$att['semester_year'])
         ->where('no',$att['no'])
         ->first();
@@ -581,8 +678,8 @@ class SchoolController extends Controller
 
         //記錄
         $event = "新增了學生 ".$student->name." 的個人資料設定。";
-        logging($event,auth()->user()->school->code,get_ip());
-        return redirect()->route('student_type');
+        logging($event,$att['code'],get_ip());
+        return redirect()->route('student_type')->with('code', $att['code']);
     }
 
     public function edit_student(Student $student){
@@ -670,23 +767,27 @@ class SchoolController extends Controller
 
         //記錄
         $event = "修改了學生 ".$student->name." 的個人資料設定。";
-        logging($event,auth()->user()->school->code,get_ip());
-        return redirect()->route('student_type');
+        logging($event,$student->code,get_ip());
+        return back();
     }
 
     public function delete_student(Student $student){
         //已經 ready 不能再刪除
-        $school = School::where('code',auth()->user()->school->code)->first();  
+        $school = School::where('code',$student->code)->first();  
         if($school->ready==1){
             return back();
         }
         $student->delete();
-        return back();
+        //記錄
+        $event = "刪除了學生 ".$student->name." 的個人資料設定。";
+        logging($event,$student->code,get_ip());
+        return back()->with('code', $student->code);
     }
 
-    public function school_ready(Request $request){
+    public function school_ready(Request $request){        
+        $code = $request->input('code');
         $semester_year = $request->input('semester_year');
-        $special_students = $students = Student::where('code',auth()->user()->school->code)
+        $special_students = $students = Student::where('code',$code)
         ->where('semester_year',$semester_year)
         ->where('special',1)
         ->get();
@@ -697,14 +798,13 @@ class SchoolController extends Controller
         }
         $att['ready'] = 1;
         $att['ready_user_id'] = auth()->user()->id;
-        School::where('code',auth()->user()->school->code)->update($att);
+        School::where('code',$code)->update($att);
 
         //記錄
         $event = "確定了學校送出名單，不再更改。";
-        logging($event,auth()->user()->school->code,get_ip());
-        return redirect()->route('student_type');
+        logging($event,$code,get_ip());        
 
-        return back();
+        return back()->with('code', $code);
     }
 
     public function school_log(){

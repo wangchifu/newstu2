@@ -11,16 +11,27 @@
     <div class="card">
       <div class="card-body">
         <br>
+        <?php           
+          $active1 = 'show active';
+          $active2 = '';
+          if(!empty(session('code'))) {
+            if(session('code')=="074603-1"){
+              $active1 = '';
+              $active2 = 'show active';
+            }
+          }
+          
+        ?>
         <nav>
         <div class="nav nav-tabs" id="nav-tab" role="tablist">
-          <button class="nav-link active" id="nav-home-tab" data-bs-toggle="tab" data-bs-target="#nav-home" type="button" role="tab" aria-controls="nav-home" aria-selected="true">{{ auth()->user()->school->name }}</button>
+          <button class="nav-link {{ $active1 }}" id="nav-home-tab" data-bs-toggle="tab" data-bs-target="#nav-home" type="button" role="tab" aria-controls="nav-home" aria-selected="true">{{ auth()->user()->school->name }}</button>
           @if(auth()->user()->school->code=="074603")
-            <button class="nav-link" id="nav-profile-tab" data-bs-toggle="tab" data-bs-target="#nav-profile" type="button" role="tab" aria-controls="nav-profile" aria-selected="false">建和分校</button>          
+            <button class="nav-link {{ $active2 }}" id="nav-profile-tab" data-bs-toggle="tab" data-bs-target="#nav-profile" type="button" role="tab" aria-controls="nav-profile" aria-selected="false">建和分校</button>          
           @endif
         </div>
       </nav>
         <div class="tab-content" id="nav-tabContent">
-          <div class="tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab">
+          <div class="tab-pane fade {{ $active1 }}" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab">
             @if(!$school->ready==1)
               <form method="post" action="{{ route('import_excel') }}" enctype="multipart/form-data" id="send_student">
                 @csrf
@@ -129,7 +140,7 @@
               @endif            
           </div>
           @if(auth()->user()->school->code=="074603")
-            <div class="tab-pane fade" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab">
+            <div class="tab-pane fade {{ $active2 }}" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab">
               @if(!$school2->ready==1)                                             
                 <form method="post" action="{{ route('import_excel') }}" enctype="multipart/form-data" id="send_student2">
                   @csrf              
@@ -150,11 +161,12 @@
                   <input type="hidden" name="jh_school" value="1">
                 </form>                        
               @else
-                @if(!$school2->situation))
+                @if(!empty($school2->situation))
                   <p><span class="text-success">**建和分校編班完成**</span></p>
                   <a href="{{ route('school_show_class','17') }}" class="btn btn-outline-primary">編班結果</a>
                   <a href="{{ route('school_export','17') }}" class="btn btn-success" target="_blank"><i class="bi bi-cloud-arrow-down-fill"></i> 下載建和分校編班檔</a>
                 @else
+                <p><span class="text-danger">**已送交編班中心無法再更動**真有需求時請編班中心打開上鎖**</span></p>
                   <p><span class="text-danger">**建和分校尚未編班**</span></p>
                 @endif 
               @endif
