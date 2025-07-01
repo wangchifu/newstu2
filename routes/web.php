@@ -71,7 +71,7 @@ Route::post('store_student', [SchoolController::class, 'store_student'])->name('
 Route::post('school_ready', [SchoolController::class, 'school_ready'])->name('school_ready');
 Route::get('school_log', [SchoolController::class, 'school_log'])->name('school_log');
 Route::get('test_start', [SchoolController::class, 'test_start'])->name('test_start');
-Route::get('test_copy', [SchoolController::class, 'test_copy'])->name('test_copy');
+Route::get('test_copy/{code?}', [SchoolController::class, 'test_copy'])->name('test_copy');
 Route::get('test_show_student/{school}', [SchoolController::class, 'test_show_student'])->name('test_show_student');
 Route::get('test_form_class/{school}', [SchoolController::class, 'test_form_class'])->name('test_form_class');
 Route::post('test_go_form/{school}', [SchoolController::class, 'test_go_form'])->name('test_go_form');
