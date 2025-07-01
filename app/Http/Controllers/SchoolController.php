@@ -333,8 +333,25 @@ class SchoolController extends Controller
         $school = School::where('code',auth()->user()->school->code)->first();  
         
         //如果是平和國小
-        if(auth()->user()->school->code=="074603"){ 
-            $semester_year2 = null;
+        $semester_year2 = null;
+        $student_data2 = [];
+        $type2[0] = 0;
+        $type2[1] = 0;
+        $type2[2] = 0;
+        $type2[3] = 0;
+        $type2[4] = 0;
+        $type2[5] = 0;
+        $subtract2 = 0; 
+        $spacial_student2 = [];
+        $bao2_same2 = [];
+        $bao2_not_same2 = [];
+        $bao3_same2 = [];
+        $bao3_not_same2 = [];
+        $with_out_teacher2 = [];
+        //如果是平和國小
+        $teacher2s = [];
+        $school2 = [];
+        if(auth()->user()->school->code=="074603"){             
             $get_student = Student::where('code','074603-1')->orderBy('created_at','DESC')->first();
             if(empty($semester_year2) and !empty($get_student)){            
                 $semester_year2 = $get_student->semester_year;
