@@ -22,8 +22,8 @@ Route::get('about', [HomeController::class, 'about'])->name('about');
 Route::get('teach', [HomeController::class, 'teach'])->name('teach');
 Route::get('pic', [HomeController::class, 'pic'])->name('pic');
 //gsuite登入
-Route::get('glogin', [HomeController::class, 'glogin'])->name('glogin');
-Route::post('gauth', [HomeController::class, 'gauth'])->name('gauth');
+//Route::get('glogin', [HomeController::class, 'glogin'])->name('glogin');
+//Route::post('gauth', [HomeController::class, 'gauth'])->name('gauth');
 Route::get('logins', [HomeController::class, 'logins'])->name('logins');
 
 //openid登入
