@@ -148,7 +148,11 @@ class HomeController extends Controller
 
     public function logout(){
         Auth::logout();
-        return redirect()->route('index');
+        $url = "https://chc.sso.edu.tw/oidc/v1/logout-to-go";
+        $post_logout_redirect_uri = env('APP_URL');
+        $id_token_hint = session('id_token');
+        $link = $url . "?post_logout_redirect_uri=".$post_logout_redirect_uri."&id_token_hint=" . $id_token_hint;
+        return redirect($link);        
     }
 
     public function gauth(Request $request){
