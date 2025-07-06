@@ -103,7 +103,7 @@ class OpenIDController extends Controller
       }
 
 
-      // 把access token記到session中
+      //把access token記到session中
       //print_r($userinfo);
       //echo "<hr>";
       //print_r($profile);      
@@ -119,7 +119,7 @@ class OpenIDController extends Controller
       $user_obj['code'] = $edufile['schoolid'];
       $user_obj['title'] = $edufile['titles'][0]['titles'][0];
       $user_obj['kind'] = "";    
-      if ($user_obj['kind'] == "學生") {
+      if ($user_obj['title'] == "學生") {
         $message = "學生禁止訪問";
         $url = "https://chc.sso.edu.tw/oidc/v1/logout-to-go";
         $post_logout_redirect_uri = url('logins');        
