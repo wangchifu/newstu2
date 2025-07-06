@@ -117,20 +117,31 @@ class OpenIDController extends Controller
       $user_obj['name'] = $userinfo['name'];      
       $user_obj['personid'] = $profile['personid'];
       $user_obj['code'] = $edufile['schoolid'];
+      $user_obj['title'] = $edufile['titles'][0]['titles'][0];
       $user_obj['kind'] = $edufile['titles'][0]['titles'][1];    
       if ($user_obj['kind'] == "學生") {
-        return redirect()->route('glogin')->withErrors(['errors' => ['學生禁止進入']]);
-      }  
-      $user_obj['title'] = $edufile['titles'][0]['titles'][0];
+        $message = "學生禁止訪問";
+        $url = "https://chc.sso.edu.tw/oidc/v1/logout-to-go";
+        $post_logout_redirect_uri = url('logins');        
+        $id_token_hint = session('id_token');
+        $link = $url . "?post_logout_redirect_uri=".$post_logout_redirect_uri."&id_token_hint=" . $id_token_hint;
+        return redirect($link)->withErrors(['gsuite_error' => [$message]]);                
+      }else{
+        $user_obj['kind'] = $edufile['titles'][0]['titles'][1]; 
+      }
+      
 
         //學生禁止訪問
         if ($user_obj['success']) {
 
-            if ($user_obj['kind'] == "學生") {
-                return redirect()->route('glogin')->withErrors(['errors' => ['學生禁止進入']]);
-            }
             if(!str_contains($user_obj['title'],'教務') & !str_contains($user_obj['title'],'教導') & !str_contains($user_obj['title'],'教學') & !str_contains($user_obj['title'],'註冊') & !str_contains($user_obj['title'],'資訊')){
-                return redirect()->route('glogin')->withErrors(['errors' => ['職稱必須含「教務,教導,教學,註冊,資訊」等字眼方能進入。']]);
+          
+              $message = "職稱必須含「教務,教導,教學,註冊,資訊」等字眼方能進入。";
+              $url = "https://chc.sso.edu.tw/oidc/v1/logout-to-go";
+              $post_logout_redirect_uri = url('logins');        
+              $id_token_hint = session('id_token');
+              $link = $url . "?post_logout_redirect_uri=".$post_logout_redirect_uri."&id_token_hint=" . $id_token_hint;
+              return redirect($link)->withErrors(['gsuite_error' => [$message]]);
             }
 
             //是否已有此帳號
@@ -140,7 +151,12 @@ class OpenIDController extends Controller
             if (empty($user)) {
                 $school = School::where('code',$user_obj['code'])->first();
                 if(empty($school)){
-                    return redirect()->route('glogin')->withErrors(['errors' => ['貴校不在系統內']]);
+                  $message = "貴校不在系統內";
+                  $url = "https://chc.sso.edu.tw/oidc/v1/logout-to-go";
+                  $post_logout_redirect_uri = url('logins');        
+                  $id_token_hint = session('id_token');
+                  $link = $url . "?post_logout_redirect_uri=".$post_logout_redirect_uri."&id_token_hint=" . $id_token_hint;
+                  return redirect($link)->withErrors(['gsuite_error' => [$message]]);                                      
                 }
                 $att['name'] = $user_obj['name'];
                 $att['title'] = $user_obj['title']; 
