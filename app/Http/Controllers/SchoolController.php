@@ -107,6 +107,9 @@ class SchoolController extends Controller
             }
             //先清空        
             Student::where('code',$code)->delete();
+            //也先清空測試的學生
+            TestStudent::where('code',$code)->delete();
+            
             //系統內已有的學生身分證            
             $all_students = Student::all();
             $all_student_array = [];
