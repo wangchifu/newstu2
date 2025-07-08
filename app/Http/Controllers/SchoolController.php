@@ -109,7 +109,7 @@ class SchoolController extends Controller
             Student::where('code',$code)->delete();
             //也先清空測試的學生
             TestStudent::where('code',$code)->delete();
-            
+
             //系統內已有的學生身分證            
             $all_students = Student::all();
             $all_student_array = [];
@@ -964,7 +964,7 @@ class SchoolController extends Controller
         };
         $students = TestStudent::where('code',$school->code)->get();
         if(count($students) < 29){
-            return back()->withErrors(['errors' => ['錯誤：學生數須大於28人才需編班！']]);
+            //return back()->withErrors(['errors' => ['錯誤：學生數須大於28人才需編班！']]);
         }
 
          //有問題時，重新編一次
@@ -1764,7 +1764,7 @@ class SchoolController extends Controller
         };
         $students = TestStudent::where('code',$school->code)->get();
         if(count($students) < 29){
-            return back()->withErrors(['errors' => ['錯誤：學生數須大於28人才能編班！']]);
+            //return back()->withErrors(['errors' => ['錯誤：學生數須大於28人才能編班！']]);
         }
         srand(rand(1000, 9999));  // 設定亂數種子
 
