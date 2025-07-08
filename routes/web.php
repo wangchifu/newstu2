@@ -60,6 +60,7 @@ Route::get('impersonate_leave', [HomeController::class, 'impersonate_leave'])->n
 
 Route::get('upload_students/{semester_year?}', [SchoolController::class, 'upload_students'])->name('upload_students');
 Route::post('import_excel', [SchoolController::class, 'import_excel'])->name('import_excel');
+Route::get('delete_all_student/{code?}', [SchoolController::class, 'delete_all_student'])->name('delete_all_student');
 Route::get('student_type/{semester_year?}', [SchoolController::class, 'student_type'])->name('student_type');
 Route::get('school_show_class/{school}', [SchoolController::class, 'school_show_class'])->name('school_show_class');
 Route::get('school_export/{school}', [SchoolController::class, 'school_export'])->name('school_export');

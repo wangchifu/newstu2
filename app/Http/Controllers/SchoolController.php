@@ -48,18 +48,20 @@ class SchoolController extends Controller
         $teacher2s = [];
         $student_data2 = [];
         $school2 = [];                
-        //如果是平和國小
-        if(auth()->user()->school->code=="074603"){        
-            $get_student = Student::where('code','074603-1')->orderBy('created_at','DESC')->first();
+        //如果是平和國小 信義國中
+        if(auth()->user()->school->code=="074603" or auth()->user()->school->code=="074541"){     
+            if(auth()->user()->school->code=="074603") $another_code = "074603-1";   
+            if(auth()->user()->school->code=="074541") $another_code = "074774";
+            $get_student = Student::where('code',$another_code)->orderBy('created_at','DESC')->first();
             if(empty($semester_year2) and !empty($get_student)){            
                 $semester_year2 = $get_student->semester_year;
             }   
 
-            $students = Student::where('code','074603-1')
+            $students = Student::where('code',$another_code)
             ->where('semester_year',$semester_year2)
             ->get();
 
-            $teacher2s = Teacher::where('code','074603-1')
+            $teacher2s = Teacher::where('code',$another_code)
             ->where('semester_year',$semester_year2)
             ->get();            
             foreach($students as $student){
@@ -75,7 +77,7 @@ class SchoolController extends Controller
                 $student_data2[$student->semester_year][$student->id]['ps'] = $student->ps;
             }
             $school2 = School::where('code','074603-1')->first(); 
-        }        
+        }            
         
         $data = [
             'semester_year'=>$semester_year,
@@ -91,17 +93,23 @@ class SchoolController extends Controller
     }
 
     public function import_excel(Request $request){  
-        $jh_school = $request->input('jh_school',0);      
+        $another_school = $request->input('another_school',0);      
         //處理檔案上傳
         if ($request->hasFile('file')) {
             $file = $request->file('file');
             $file_name_array = explode('_',$file->getClientOriginalName());
 
-            if(chk_file_format($file->getClientOriginalName(),$jh_school)=="NO"){
+            if(chk_file_format($file->getClientOriginalName(),$another_school)=="NO"){
                 return back()->withErrors(['errors' => ['錯誤：檔案名稱不符合要求！']]);
             }            
-            if($jh_school==1){
-                $code = '074603-1'; //建和分校
+            if($another_school){
+                if(auth()->user()->school->code=="074603" ){
+                    $code = '074603-1'; //建和分校
+                }
+                if(auth()->user()->school->code=="074541" ){
+                    $code = '074774'; //信義國(中)小
+                }
+                
             }else{
                 $code = auth()->user()->school->code; //其他學校
             }
@@ -350,21 +358,24 @@ class SchoolController extends Controller
         $bao2_not_same2 = [];
         $bao3_same2 = [];
         $bao3_not_same2 = [];
-        $with_out_teacher2 = [];
-        //如果是平和國小
+        $with_out_teacher2 = [];        
         $teacher2s = [];
         $school2 = [];
-        if(auth()->user()->school->code=="074603"){             
-            $get_student = Student::where('code','074603-1')->orderBy('created_at','DESC')->first();
+        //如果是平和國小 信義國中
+        if(auth()->user()->school->code=="074603" or auth()->user()->school->code=="074541"){             
+            if(auth()->user()->school->code=="074603") $another_code = "074603-1";   
+            if(auth()->user()->school->code=="074541") $another_code = "074774";            
+            $get_student = Student::where('code',$another_code)->orderBy('created_at','DESC')->first();
             if(empty($semester_year2) and !empty($get_student)){            
                 $semester_year2 = $get_student->semester_year;
             }
             
-            $students = Student::where('code','074603-1')
-            ->where('semester_year',$semester_year)
+            $students = Student::where('code',$another_code)
+            ->where('semester_year',$semester_year2)
             ->get();
-            $teacher2s = Teacher::where('code','074603-1')
-            ->where('semester_year',$semester_year)
+
+            $teacher2s = Teacher::where('code',$another_code)
+            ->where('semester_year',$semester_year2)
             ->get();
             $student_data2 = [];
             $type2[0] = 0;
@@ -430,7 +441,7 @@ class SchoolController extends Controller
                 $subtract2 +=$student->subtract;
             }
 
-            $school2 = School::where('code','074603-1')->first();          
+            $school2 = School::where('code',$another_code)->first();          
         
         }
 
@@ -461,6 +472,27 @@ class SchoolController extends Controller
             'school2'=>$school2,
         ];
         return view('schools.student_type',$data);
+    }
+
+    public function delete_all_student($code=null){
+        if(empty($code)){
+            $code = auth()->user()->school->code;
+        }
+        //已經 ready 不能刪除
+        $school = School::where('code',$code)->first();  
+        if($school->ready==1){
+            return back();
+        }
+
+        //先清空        
+        Student::where('code',$code)->delete();
+        //也先清空測試的學生
+        TestStudent::where('code',$code)->delete();
+        //先清空
+        Teacher::where('code',$code)->delete();
+
+        return redirect()->back()->with('code', $code);
+
     }
 
     public function school_show_class(School $school){
@@ -885,10 +917,12 @@ class SchoolController extends Controller
 
     public function test_show_student(School $school){
         if($school->code != auth()->user()->school->code){
-            if(auth()->user()->school->code == '074603' and $school->code == '074603-1'){                
-            }else{
+            $check = 0;            
+            if(auth()->user()->school->code == '074603' and $school->code == '074603-1') $check = 1;
+            if(auth()->user()->school->code == '074541' and $school->code == '074774') $check = 1;
+            if($check == 0){
                 return back();    
-            }            
+            }
         }
         $students = TestStudent::where('code',$school->code)->get();
         $student_data['boy'] = 0;//男生人數
@@ -942,10 +976,12 @@ class SchoolController extends Controller
 
     public function test_form_class(School $school){
         if($school->code != auth()->user()->school->code){
-            if(auth()->user()->school->code == '074603' and $school->code == '074603-1'){                
-            }else{
+            $check = 0;            
+            if(auth()->user()->school->code == '074603' and $school->code == '074603-1') $check = 1;
+            if(auth()->user()->school->code == '074541' and $school->code == '074774') $check = 1;
+            if($check == 0){
                 return back();    
-            }            
+            }                       
         }
         $teachers = Teacher::where('code',$school->code)->get();
         $data = [
@@ -1670,10 +1706,12 @@ class SchoolController extends Controller
 
     public function test_show_class(School $school){
         if($school->code != auth()->user()->school->code){
-            if(auth()->user()->school->code == '074603' and $school->code == '074603-1'){                
-            }else{
+            $check = 0;            
+            if(auth()->user()->school->code == '074603' and $school->code == '074603-1') $check = 1;
+            if(auth()->user()->school->code == '074541' and $school->code == '074774') $check = 1;
+            if($check == 0){
                 return back();    
-            }            
+            }                              
         }        
         $students = TestStudent::where('code',$school->code)
             ->orderBy('class')->orderBy('num')->get();
@@ -1715,10 +1753,12 @@ class SchoolController extends Controller
 
     public function test_form_teacher(School $school){
         if($school->code != auth()->user()->school->code){
-            if(auth()->user()->school->code == '074603' and $school->code == '074603-1'){                
-            }else{
+            $check = 0;            
+            if(auth()->user()->school->code == '074603' and $school->code == '074603-1') $check = 1;
+            if(auth()->user()->school->code == '074541' and $school->code == '074774') $check = 1;
+            if($check == 0){
                 return back();    
-            }            
+            }                                 
         }   
         $teachers = Teacher::where('code',$school->code)->get();
         $eng_class = [0=>'A1',1=>'A2',2=>'A3',3=>'A4',4=>'A5',5=>'A6',6=>'A7',7=>'A8',8=>'A9',9=>'A10',10=>'A11',11=>'A12',12=>'A13',13=>'A14',14=>'A15',15=>'A16',16=>'A17',17=>'A18',18=>'A19',19=>'A20',20=>'A21',21=>'A22',22=>'A23',23=>'A24',24=>'A25',25=>'A26'];
@@ -1853,10 +1893,12 @@ class SchoolController extends Controller
 
     public function test_show_teacher(School $school){
         if($school->code != auth()->user()->school->code){
-            if(auth()->user()->school->code == '074603' and $school->code == '074603-1'){                
-            }else{
+            $check = 0;            
+            if(auth()->user()->school->code == '074603' and $school->code == '074603-1') $check = 1;
+            if(auth()->user()->school->code == '074541' and $school->code == '074774') $check = 1;
+            if($check == 0){
                 return back();    
-            }            
+            }                                 
         }   
         $class_teachers = TestStudent::where('code',$school->code)->orderBy('class')->get()->groupBy('class');        
 
@@ -1873,10 +1915,12 @@ class SchoolController extends Controller
 
     public function test_form_order(School $school){
         if($school->code != auth()->user()->school->code){
-            if(auth()->user()->school->code == '074603' and $school->code == '074603-1'){                
-            }else{
+            $check = 0;            
+            if(auth()->user()->school->code == '074603' and $school->code == '074603-1') $check = 1;
+            if(auth()->user()->school->code == '074541' and $school->code == '074774') $check = 1;
+            if($check == 0){
                 return back();    
-            }            
+            }                                
         }   
         $teachers = Teacher::where('code',$school->code)->get();
         $eng_class = [0=>'A1',1=>'A2',2=>'A3',3=>'A4',4=>'A5',5=>'A6',6=>'A7',7=>'A8',8=>'A9',9=>'A10',10=>'A11',11=>'A12',12=>'A13',13=>'A14',14=>'A15',15=>'A16',16=>'A17',17=>'A18',18=>'A19',19=>'A20',20=>'A21',21=>'A22',22=>'A23',23=>'A24',24=>'A25',25=>'A26'];
@@ -1924,10 +1968,12 @@ class SchoolController extends Controller
 
     public function test_delete123(School $school){
         if($school->code != auth()->user()->school->code){
-            if(auth()->user()->school->code == '074603' and $school->code == '074603-1'){                
-            }else{
+            $check = 0;            
+            if(auth()->user()->school->code == '074603' and $school->code == '074603-1') $check = 1;
+            if(auth()->user()->school->code == '074541' and $school->code == '074774') $check = 1;
+            if($check == 0){
                 return back();    
-            }            
+            }                                
         }   
         TestStudent::where('code',$school->code)->delete();                
         
@@ -1936,10 +1982,12 @@ class SchoolController extends Controller
 
     public function test_delete23(School $school){
         if($school->code != auth()->user()->school->code){
-            if(auth()->user()->school->code == '074603' and $school->code == '074603-1'){                
-            }else{
+            $check = 0;            
+            if(auth()->user()->school->code == '074603' and $school->code == '074603-1') $check = 1;
+            if(auth()->user()->school->code == '074541' and $school->code == '074774') $check = 1;
+            if($check == 0){
                 return back();    
-            }            
+            }                               
         }   
         $att['class'] = null;
         $att['num'] = null;
@@ -1957,10 +2005,12 @@ class SchoolController extends Controller
 
     public function test_print(School $school){
         if($school->code != auth()->user()->school->code){
-            if(auth()->user()->school->code == '074603' and $school->code == '074603-1'){                
-            }else{
+            $check = 0;            
+            if(auth()->user()->school->code == '074603' and $school->code == '074603-1') $check = 1;
+            if(auth()->user()->school->code == '074541' and $school->code == '074774') $check = 1;
+            if($check == 0){
                 return back();    
-            }            
+            }                              
         }   
         $students = TestStudent::where('code',$school->code)
             ->orderBy('class')->orderBy('num')->get();
@@ -2008,9 +2058,14 @@ class SchoolController extends Controller
     }
 
     public function test_print2(School $school){
-        if($school->group_id != auth()->user()->group_id){
-            return back();    
-        }
+        $check = 0;            
+        if(auth()->user()->school->code == '074603' and $school->code == '074603-1') $check = 1;
+        if(auth()->user()->school->code == '074541' and $school->code == '074774') $check = 1;
+        if($check == 0){
+            if($school->group_id != auth()->user()->group_id){
+                return back();    
+            }
+        }        
         $students = TestStudent::where('code',$school->code)
             ->orderBy('class')->orderBy('num')->get();
                 

@@ -15,7 +15,7 @@
           $active1 = 'show active';
           $active2 = '';
           if(!empty(session('code'))) {
-            if(session('code')=="074603-1"){
+            if(session('code')=="074603-1" or session('code')=="074774"){
               $active1 = '';
               $active2 = 'show active';
             }
@@ -27,6 +27,9 @@
           <button class="nav-link {{ $active1 }}" id="nav-home-tab" data-bs-toggle="tab" data-bs-target="#nav-home" type="button" role="tab" aria-controls="nav-home" aria-selected="true">{{ auth()->user()->school->name }}</button>
           @if(auth()->user()->school->code=="074603")
             <button class="nav-link {{ $active2 }}" id="nav-profile-tab" data-bs-toggle="tab" data-bs-target="#nav-profile" type="button" role="tab" aria-controls="nav-profile" aria-selected="false">建和分校</button>          
+          @endif
+          @if(auth()->user()->school->code=="074541")
+            <button class="nav-link {{ $active2 }}" id="nav-profile-tab" data-bs-toggle="tab" data-bs-target="#nav-profile" type="button" role="tab" aria-controls="nav-profile" aria-selected="false">信義國小</button>          
           @endif
         </div>
       </nav>
@@ -41,16 +44,17 @@
                   <div class="col-sm-10">
                     <input class="form-control" type="file" id="file" name="file" accept=".xlsx" required>                                            
                   </div>
-                  <small style="margin-top: 20px;">檔案格式：<span class="text-danger">學年度_學校代碼_日期.xlsx</span>，如 (113_074627_20240626.xlsx)</small>
+                  <small style="margin-top: 20px;">檔案格式：<span class="text-danger">學年度_學校代碼_日期.xlsx</span>，如 (113_{{ auth()->user()->school->code }}_20240626.xlsx)</small>
                 </div>
                 <div class="row mb-3">
                   <label class="col-sm-2 col-form-label"></label>
                   <div class="col-sm-10">
                     @include('layouts.errors')
                     <a class="btn btn-primary" onclick="sw_confirm2('重複上傳將先刪除先前資料喔！','send_student')"><i class="bi bi-arrow-right-circle-fill"></i> 送出</a>
+                    <a class="btn btn-danger" onclick="sw_confirm1('會清空目前已上傳的資料喔！','{{ route('delete_all_student') }}')"><i class="bi bi-bucket-fill"></i> 清空上傳</a>
                   </div>
                 </div>
-                <input type="hidden" name="jh_school" value="0">
+                <input type="hidden" name="another_school" value="0">
               </form>          
             @else
                 @if(!empty(auth()->user()->school->situation))
@@ -139,26 +143,49 @@
               </div>
               @endif            
           </div>
-          @if(auth()->user()->school->code=="074603")
+          @if(auth()->user()->school->code=="074603" or auth()->user()->school->code=="074541")
             <div class="tab-pane fade {{ $active2 }}" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab">
-              @if(!$school2->ready==1)                                             
+              @if(!$school2->ready==1)             
+              <h5 class="card-title">請點選從校務系統 cloudschool 下載來的檔案</h5>                                
                 <form method="post" action="{{ route('import_excel') }}" enctype="multipart/form-data" id="send_student2">
                   @csrf              
                   <div class="row mb-3">
-                    <label for="inputNumber" class="col-sm-2 col-form-label">建和分校檔案上傳</label>
+                    @if(auth()->user()->school->code=="074603")
+                      <label for="inputNumber" class="col-sm-2 col-form-label">建和分校檔案上傳</label>
+                    @endif
+                    @if(auth()->user()->school->code=="074541")
+                      <label for="inputNumber" class="col-sm-2 col-form-label">信義國小檔案上傳</label>
+                    @endif
                     <div class="col-sm-10">
                       <input class="form-control" type="file" id="file" name="file" accept=".xlsx" required>                                            
                     </div>
-                    <small style="margin-top: 20px;">檔案格式：<span class="text-danger">學年度_074603-1_日期.xlsx</span>，如 (113_074603-1_20240626.xlsx)</small>
+                    @if(auth()->user()->school->code=="074603")
+                      <small style="margin-top: 20px;">檔案格式：<span class="text-danger">學年度_074603-1_日期.xlsx</span>，如 (113_074603-1_20240626.xlsx)</small>
+                    @endif
+                    @if(auth()->user()->school->code=="074541")
+                      <small style="margin-top: 20px;">檔案格式：<span class="text-danger">學年度_074774_日期.xlsx</span>，如 (113_074774_20240626.xlsx)</small>
+                    @endif
                   </div>
                   <div class="row mb-3">
                     <label class="col-sm-2 col-form-label"></label>
                     <div class="col-sm-10">
                       @include('layouts.errors')
-                      <a class="btn btn-primary" onclick="sw_confirm2('重複上傳將先刪除先前資料喔！','send_student2')"><i class="bi bi-arrow-right-circle-fill"></i> 送出建和分校</a>
+                      @if(auth()->user()->school->code=="074603")
+                        <a class="btn btn-primary" onclick="sw_confirm2('重複上傳將先刪除先前資料喔！','send_student2')"><i class="bi bi-arrow-right-circle-fill"></i> 送出建和分校</a>
+                        <a class="btn btn-danger" onclick="sw_confirm1('會清空目前已上傳的資料喔！','{{ route('delete_all_student',['074603-1']) }}')"><i class="bi bi-bucket-fill"></i> 清空</a>
+                      @endif
+                      @if(auth()->user()->school->code=="074541")
+                        <a class="btn btn-primary" onclick="sw_confirm2('重複上傳將先刪除先前資料喔！','send_student2')"><i class="bi bi-arrow-right-circle-fill"></i> 送出信義國小</a>
+                        <a class="btn btn-danger" onclick="sw_confirm1('會清空目前已上傳的資料喔！','{{ route('delete_all_student',['074774']) }}')"><i class="bi bi-bucket-fill"></i> 清空上傳</a>
+                      @endif
                     </div>
                   </div>
-                  <input type="hidden" name="jh_school" value="1">
+                  @if(auth()->user()->school->code=="074603")
+                    <input type="hidden" name="another_school" value="074603-1">
+                  @endif
+                  @if(auth()->user()->school->code=="074541")
+                    <input type="hidden" name="another_school" value="074774"> 
+                  @endif
                 </form>                        
               @else
                 @if(!empty($school2->situation))
