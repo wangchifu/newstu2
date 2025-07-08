@@ -19,8 +19,9 @@ function chk_id_number($cardid) {
         return false;
     }else{
         //計算字母總和
-        $nx = $alphabet[$alpha];
-        $ns = $nx[0]+$nx[1]*9;//十位數+個位數x9
+        $nx = $alphabet[$alpha];        
+        $ns = intval($nx[0]) * 1 + intval($nx[1]) * 9;
+        $ns = intval($nx[0]) * 1 + intval($nx[1]) * 9;
     }
 
     //驗證男女性別
