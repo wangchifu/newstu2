@@ -652,7 +652,10 @@ class SchoolController extends Controller
     }  
 
     public function store_student(Request $request){
-        $att = $request->all();        
+        $att = $request->all();     
+        if(chk_id_number($att['id_number'])==false){
+            return back()->withErrors(['errors' => ['錯誤：身分證字號格式不正確！']]);
+        }
         $att['semester_year'] = date('Y') - 1911;
         if($att['name']==null or $att['no']==null or $att['id_number']==null){
             return back()->withErrors(['errors' => ['錯誤：流水號或姓名或身分證未填！']]);
