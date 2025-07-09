@@ -39,10 +39,10 @@
           <h4>{{ auth()->user()->school->name }}</h4>
           <table class="table table-bordered">
             <tr>
-              <td>
+              <td width="50%">
                 一般生：{{ $type[0] }}
               </td>
-              <td>
+              <td width="50%">
                 特殊生：{{ $type[1] }} (共減 {{ $subtract }} 人)：
                 @foreach($spacial_student as $k=>$v)
                   <?php $wt=(!empty($student_data[$semester_year][$k]['with_teacher']))?$student_data[$semester_year][$k]['with_teacher']:"<span class='text-danger'>未設定</span>" ?>
@@ -127,6 +127,7 @@
               <p><span class="text-danger">**尚未編班**</span></p>
             @endif
           @endif
+          <p class="text-danger">**注意：若學校滿編，特殊生再設定減人，必定會造成某些班級超過28人上限！，此時唯有設定特殊生減0人，才能班班28人**</p>
           <table class="table table-hover">
             <thead>
               <tr>
@@ -240,10 +241,10 @@
             @endif            
             <table class="table table-bordered">
               <tr>
-                <td>
+                <td width="50%">
                   一般生：{{ $type2[0] }}
                 </td>
-                <td>
+                <td width="50%">
                   特殊生：{{ $type2[1] }} (共減 {{ $subtract2 }} 人)：
                   @foreach($spacial_student2 as $k=>$v)
                     <?php $wt=(!empty($student_data2[$semester_year2][$k]['with_teacher']))?$student_data2[$semester_year2][$k]['with_teacher']:"<span class='text-danger'>未設定</span>" ?>
