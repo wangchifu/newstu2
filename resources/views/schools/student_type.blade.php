@@ -333,7 +333,8 @@
                 <p><span class="text-danger">**已送交編班中心無法再更動**真有需求時請編班中心打開上鎖**</span></p>
                 <p><span class="text-danger">**尚未編班**</span></p>
               @endif
-            @endif
+            @endif  
+            <p class="text-danger">**注意：若學校滿編，特殊生再設定減人，必定會造成某些班級超過28人上限！，此時唯有設定特殊生減0人，才能班班28人**</p>          
             <table class="table table-hover">
               <thead>
                 <tr>
