@@ -127,15 +127,27 @@ class OpenIDController extends Controller
         $link = $url . "?post_logout_redirect_uri=".$post_logout_redirect_uri."&id_token_hint=" . $id_token_hint;
         return redirect($link)->withErrors(['gsuite_error' => [$message]]);                
       }else{
-        $user_obj['kind'] = $edufile['titles'][0]['titles'][1]; 
+        $title_array = $edufile['titles'][0]['titles'];
+        $title = "";
+        foreach($title_array as $k =>$v){
+          $title .= $v.',';
+        }
+        $title = rtrim($title, ',');
+        $user_obj['kind'] = $title;  
       }
       
 
         //學生禁止訪問
         if ($user_obj['success']) {
 
-            if(!str_contains($user_obj['title'],'教務') & !str_contains($user_obj['title'],'教導') & !str_contains($user_obj['title'],'教學') & !str_contains($user_obj['title'],'註冊') & !str_contains($user_obj['title'],'資訊')){
-          
+            $title_array = explode(',', $user_obj['kind']);
+            $pass = "ok";
+            foreach($title_array as $k => $v) {
+                if (!str_contains($v,'教務') & !str_contains($v,'教導') & !str_contains($v,'教學') & !str_contains($v,'註冊') & !str_contains($v,'資訊')) {
+                    $pass = "no";
+                }
+            }
+            if($pass == "no"){          
               $message = "職稱必須含「教務,教導,教學,註冊,資訊」等字眼方能進入。";
               $url = "https://chc.sso.edu.tw/oidc/v1/logout-to-go";
               $post_logout_redirect_uri = url('logins');        
