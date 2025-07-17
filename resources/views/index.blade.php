@@ -25,7 +25,7 @@
 @section('page_title')
 <br>
 <h1>歡迎使用</h1>
-<i class="bi bi-star-fill text-warning"></i> 為編班中心學校，各分區尚未取得編班權限的學校，請聯絡和東國小王老師。
+<i class="bi bi-star-fill text-warning"></i> 為編班中心學校，各分區尚未取得編班權限的學校，請聯絡目前有權限的學校轉移權限。
 @endsection
 
 @section('content')
@@ -33,7 +33,7 @@
 <section class="section">
   <div class="row">
     @foreach($groups as $group)
-      <div class="col-xxl-4 col-md-6">
+      <div class="col-xxl-3 col-md-3 col-sm-6">
         <div class="card info-card sales-card">
           <div class="card-body">
             <h5 class="card-title">{{ $group->name }} <span>| 學校名單</span></h5>            
@@ -44,8 +44,7 @@
                     <th scope="col">#</th>
                     <th scope="col" nowrap>學校代碼</th>
                     <th scope="col" nowrap>學校名稱</th>
-                    <th scope="col" nowrap>已編</th>
-                    <th scope="col" nowrap>變更日期</th>
+                    <th scope="col" nowrap>已編</th>                    
                   </tr>
                 </thead>
                 <tbody>
@@ -66,8 +65,7 @@
                         @else
                           <i class="bi bi-x-circle text-danger"></i>
                         @endif
-                      </td>
-                      <td>{{ substr($school->updated_at,0,10) }}</td>
+                      </td>                      
                     </tr>
                     <?php $n++; ?>
                   @endforeach                  
