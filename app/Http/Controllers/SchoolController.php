@@ -997,8 +997,8 @@ class SchoolController extends Controller
     public function test_go_form(Request $request,School $school){
         if(empty($request->input('random_seed'))){
             return back()->withErrors(['errors' => ['錯誤：亂數種子不可以空著！']]);
-        }
-        if((int)$request->input('random_seed') < 1000){
+        }        
+        if(strlen($request->input('random_seed')) <> 4){
             return back()->withErrors(['errors' => ['錯誤：亂數種子要四位數字！']]);
         };
         $students = TestStudent::where('code',$school->code)->get();
@@ -1802,7 +1802,7 @@ class SchoolController extends Controller
         if(empty($request->input('random_seed'))){
             return back()->withErrors(['errors' => ['錯誤：亂數種子不可以空著！']]);
         }
-        if((int)$request->input('random_seed') < 1000){
+        if(strlen($request->input('random_seed')) <> 4){
             return back()->withErrors(['errors' => ['錯誤：亂數種子要四位數字！']]);
         };
         $students = TestStudent::where('code',$school->code)->get();
