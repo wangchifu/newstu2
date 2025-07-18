@@ -141,10 +141,10 @@ class OpenIDController extends Controller
         if ($user_obj['success']) {
 
             $title_array = explode(',', $user_obj['kind']);
-            $pass = "ok";
+            $pass = "no";
             foreach($title_array as $k => $v) {
                 if (!str_contains($v,'教務') & !str_contains($v,'教導') & !str_contains($v,'教學') & !str_contains($v,'註冊') & !str_contains($v,'資訊')) {
-                    $pass = "no";
+                    $pass = "ok";
                 }
             }
             if($pass == "no"){          
