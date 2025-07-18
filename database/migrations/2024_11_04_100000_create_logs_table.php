@@ -16,7 +16,7 @@ return new class extends Migration
         Schema::create('logs', function (Blueprint $table) {
             $table->id();            
             $table->string('message');
-            $table->tinyInteger('user_id');
+            $table->string('user_id');
             $table->string('ip')->nullable();     
             $table->string('for_code')->nullable();   
             $table->tinyInteger('group_id')->nullable();      
